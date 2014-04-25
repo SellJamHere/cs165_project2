@@ -9,6 +9,11 @@ BigInt::BigInt()
 
 }
 
+BigInt::BigInt(BigInt* bigInt)
+{
+    digits = bigInt->digits;
+}
+
 BigInt::BigInt(const string &stringInt)
 {
     int size = stringInt.size();
@@ -57,7 +62,7 @@ BigInt & BigInt::operator+(const BigInt &rightInt)
     BigInt lesser;
     if (this->digits.size() > rightInt.digits.size())
     {
-        greater = new BigInt(this);
+        greater = this;
         lesser = rightInt;
     } 
     else
@@ -65,33 +70,24 @@ BigInt & BigInt::operator+(const BigInt &rightInt)
         greater = new BigInt(rightInt);
         lesser = *this;
     }
-
+    
+    BigInt *temp = new BigInt(greater);
+    cout << "Temp: "<< *temp << endl;
     //add digits together up to the size of the smallest
     cout << "Beginning loop:" << endl;
+    
+    int carry = 0;
     for (int i = 0; i < lesser.digits.size(); i++)
     {
-        int sum = greater.digits[i] + lesser.digits[i];
-        cout << greater.digits[i] << " + " << lesser.digits[i] << " = " << sum << endl;
-        //if there is overflow add to next largest digit
-        if (sum >= NUMBER_BASE)
-        {
-            cout << "CARRY! " << sum - NUMBER_BASE << endl;
-            greater->digits[i] = sum - NUMBER_BASE;
-            greater->digits[i + 1] += 1;
-        }
-        else
-        {
-            greater->digits[i] = sum;
-        }
+        temp->digits[i] = ((greater->digits[i] + lesser.digits[i] + carry) % NUMBER_BASE);
+        carry = (greater->digits[i] + lesser.digits[i] + carry) / NUMBER_BASE;
     }
+    if(carry != 0)
+        temp->digits.push_back(carry);
+    
     cout << "End loop" << endl;
 
-    for (int i = lesser.digits.size(); i < greater.digits.size(); i++)
-    {
-        
-    }
-
-    return *greater;
+    return *temp;
 }
 
 BigInt & BigInt::operator-(BigInt &rightInt)
@@ -99,8 +95,31 @@ BigInt & BigInt::operator-(BigInt &rightInt)
     return *this;
 }
 
+bool BigInt::lessThanTen()
+{
+    return digits.size() < 2;
+}
+
+BigInt & BigInt::karatsuba(BigInt &int1, BigInt &int2)
+{
+    //Base case: for small numbers
+    if (int1.lessThanTen() || int2.lessThanTen())
+        return int1*int2;
+    int m = max(int1.digits.size(), int2.digits.size());
+    int m2 = m/2;
+    
+    
+    
+        
+    return int1;
+}
+
 BigInt & BigInt::operator*(BigInt &rightInt)
 {
+    
+    
+    
+    
     return *this;
 }
 

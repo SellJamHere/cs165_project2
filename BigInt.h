@@ -11,6 +11,7 @@ class BigInt
 {
 public:
     BigInt();
+    BigInt(BigInt* bigInt);
     BigInt(const string &stringInt);
     ~BigInt();
     BigInt & operator=(const string &stringInt);
@@ -20,6 +21,8 @@ public:
     BigInt & operator*(BigInt &rightInt);
     BigInt & operator/(BigInt &rightInt);
     BigInt & operator%(BigInt &rightInt);
+    bool lessThanTen();
+    BigInt & karatsuba(BigInt &num1, BigInt &num2);
 
     friend ostream & operator<<(ostream &os, BigInt &bigInt);
 
