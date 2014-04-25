@@ -11,14 +11,15 @@ class BigInt
 {
 public:
     BigInt();
-    BigInt(string &stringInt);
+    BigInt(const string &stringInt);
     ~BigInt();
-    BigInt & operator=(string &stringInt);
-    BigInt & operator+(BigInt &leftInt);
-    BigInt & operator-(BigInt &leftInt);
-    BigInt & operator*(BigInt &leftInt);
-    BigInt & operator/(BigInt &leftInt);
-    BigInt & operator%(BigInt &leftInt);
+    BigInt & operator=(const string &stringInt);
+    // BigInt & operator=(const BigInt &rightInt);
+    BigInt & operator+(const BigInt &rightInt);
+    BigInt & operator-(BigInt &rightInt);
+    BigInt & operator*(BigInt &rightInt);
+    BigInt & operator/(BigInt &rightInt);
+    BigInt & operator%(BigInt &rightInt);
 
     friend ostream & operator<<(ostream &os, BigInt &bigInt);
 

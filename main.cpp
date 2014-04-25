@@ -7,13 +7,13 @@ using namespace std;
 
 int main()
 {
-    string numberString = "12345";
-    BigInt bigInt(numberString);
-    cout << bigInt << endl;
+    BigInt bigInt("12345");
 
-    numberString = "12367";
-    bigInt = numberString;
-    cout << bigInt << endl;
+    BigInt bigInt2;
+    bigInt2 = "1234";
+    BigInt bigInt3 = bigInt + bigInt;
+
+    cout << bigInt << " + " << bigInt << " + "  << bigInt2 << " = " << bigInt3 << endl;
 
     return 0;
 }
