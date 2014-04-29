@@ -72,9 +72,9 @@ BigInt & BigInt::operator+(const BigInt &rightInt)
     }
     
     BigInt *temp = new BigInt(greater);
-    cout << "Temp: "<< *temp << endl;
+    // cout << "Temp: "<< *temp << endl;
     //add digits together up to the size of the smallest
-    cout << "Beginning loop:" << endl;
+    // cout << "Beginning loop:" << endl;
     
     int carry = 0;
     for (int i = 0; i < lesser.digits.size(); i++)
