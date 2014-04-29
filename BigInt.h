@@ -13,16 +13,17 @@ public:
     BigInt();
     BigInt(BigInt* bigInt);
     BigInt(const string &stringInt);
+    BigInt(int integer);
     ~BigInt();
     BigInt & operator=(const string &stringInt);
     // BigInt & operator=(const BigInt &rightInt);
     BigInt & operator+(const BigInt &rightInt);
     BigInt & operator-(BigInt &rightInt);
     BigInt & operator*(BigInt &rightInt);
+    BigInt & operator*(int rightInt);
     BigInt & operator/(BigInt &rightInt);
     BigInt & operator%(BigInt &rightInt);
-    bool lessThanTen();
-    BigInt & karatsuba(BigInt &num1, BigInt &num2);
+    int toInt();
 
     friend ostream & operator<<(ostream &os, BigInt &bigInt);
 
@@ -32,6 +33,18 @@ private:
     // significant digits get larger
     // eg. 1234 --> [4][3][2][1]
     vector<short> digits;
+
+    //private member functions
+    bool lessThanTen();
+    
+    BigInt & longMultiplication(BigInt &num1, BigInt &num2);
+    BigInt & karatsuba(BigInt &num1, BigInt &num2);
+    BigInt & splitTopHalf(BigInt &num, int index);
+    BigInt & splitBottomHalf(BigInt &num, int index);
+
+
+    void removeLeadingZeros(BigInt &bigInt);
+    
 };
 
 #endif
