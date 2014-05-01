@@ -138,9 +138,12 @@ BigInt & BigInt::operator*(int rightInt)
     return longMultiplication(*this, integer);
 }
 
-BigInt & BigInt::operator/(BigInt &rightInt)
+BigInt & BigInt::operator/(int rightInt)
 {
-    return *this;
+    int remainder = 0;
+    BigInt &returnInt = longDivision(*this, rightInt, remainder);
+    cout << remainder << endl;
+    return returnInt;
 }
 
 BigInt & BigInt::operator%(BigInt &rightInt)
@@ -182,6 +185,38 @@ int BigInt::toInt()
     }
 }
 
+BigInt & BigInt::longDivision(BigInt &num1, int num2, int &remainder)
+{
+    
+    BigInt *temp = new BigInt();
+    int d = num1.digits[num1.digits.size() - 1];
+    
+    int i = num1.digits.size() - 1;
+    while (i >= 0)
+    {
+        int result = d / num2;
+        while (result == 0){
+            temp->digits.push_back(result);
+            d = num1.digits[i] * 10 + num1.digits[i-1];
+            i--;
+            result = d / num2;
+        }
+        
+        temp->digits.push_back(result);
+        
+        d = d - (result * num2);
+        
+        i--;
+        
+        if (result != 0)
+            d = d * 10 + num1.digits[i];
+    }
+    
+    remainder = d / num2;
+    reverse(temp->digits.begin(), temp->digits.end());
+    removeLeadingZeros(*temp);
+    return *temp;
+}
 
 BigInt & BigInt::longMultiplication(BigInt &num1, BigInt &num2)
 {
