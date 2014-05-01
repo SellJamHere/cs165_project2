@@ -23,6 +23,11 @@ public:
     BigInt & operator*(int rightInt);
     BigInt & operator/(BigInt &rightInt);
     BigInt & operator%(BigInt &rightInt);
+
+    //Overload relational operators
+    bool operator>(BigInt &rightInt);
+
+
     int toInt();
 
     friend ostream & operator<<(ostream &os, BigInt &bigInt);
@@ -42,8 +47,10 @@ private:
     BigInt & splitTopHalf(BigInt &num, int index);
     BigInt & splitBottomHalf(BigInt &num, int index);
 
+    BigInt & divideBySubtraction(BigInt &numerator, BigInt &denominator);
 
     void removeLeadingZeros(BigInt &bigInt);
+    bool isOdd();
     
 };
 

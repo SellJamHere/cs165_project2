@@ -22,8 +22,8 @@ int main()
 
     cout << endl << endl << endl;
 
-    BigInt bigInt4("1234");
-    BigInt bigMult = bigInt4 * 1234567890;
+    BigInt bigInt4("100000000000000000039");
+    BigInt bigMult = bigInt4 * bigInt4;
     
     cout << "bigInt4 * bigInt4 = " << bigMult << endl;
 

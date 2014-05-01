@@ -8,7 +8,7 @@ const int ASCII_0 = 48;
 
 BigInt::BigInt()
 {
-
+    digits.push_back(0);
 }
 
 BigInt::BigInt(BigInt* bigInt)
@@ -146,6 +146,14 @@ BigInt & BigInt::operator/(BigInt &rightInt)
 BigInt & BigInt::operator%(BigInt &rightInt)
 {
     return *this;
+}
+
+//Overload relational operators
+
+//BigInts must not have leading zeros when > is called
+bool BigInt::operator>(BigInt &rightInt)
+{
+    return this->digits.size() > rightInt.digits.size();
 }
 
 ostream& operator<<(ostream &os, BigInt &bigInt)
@@ -290,6 +298,11 @@ BigInt & BigInt::splitBottomHalf(BigInt &num, int index)
     return *bottom;
 }
 
+BigInt & BigInt::divideBySubtraction(BigInt &numerator, BigInt &denominator)
+{
+
+}
+
 void BigInt::removeLeadingZeros(BigInt &bigInt)
 {
     int i = bigInt.digits.size() - 1;
@@ -298,4 +311,16 @@ void BigInt::removeLeadingZeros(BigInt &bigInt)
         i--;
     }
     bigInt.digits.resize(i + 1);
+}
+
+bool BigInt::isOdd()
+{
+    if (digits.size() > 0)
+    {
+        return digits[0] % 2 == 1;
+    }
+    else {
+        cout << "Integer is size <= 0";
+        return false;
+    }
 }
