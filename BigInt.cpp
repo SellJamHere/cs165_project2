@@ -235,16 +235,19 @@ BigInt & BigInt::longMultiplication(BigInt &num1, BigInt &num2)
     }
 
     BigInt *temp = new BigInt();
-    temp->digits.resize(lesser.digits.size() * greater.digits.size(), 0);
     
     for (int i = 0; i < greater.digits.size(); i++)
     {
         int carry = 0;
         int product;
         
-        int j = 0;
-        for (j = 0; j < lesser.digits.size() + i; j++)
+        int j;
+        for (j = 0; j < lesser.digits.size(); j++)
         {
+            if (temp->digits.size() < i + j + 1)
+            {
+                temp->digits.push_back(0);
+            }
             product = temp->digits[i + j] + (greater.digits[i] * lesser.digits[j]) + carry;
             carry = product / 10;
             temp->digits[i + j] = product % 10;
@@ -258,7 +261,7 @@ BigInt & BigInt::longMultiplication(BigInt &num1, BigInt &num2)
         }
     }
 
-    // removeLeadingZeros(*temp);
+    removeLeadingZeros(*temp);
 
     return *temp;
 }
