@@ -21,7 +21,7 @@ public:
     BigInt & operator-(BigInt &rightInt);
     BigInt & operator*(BigInt &rightInt);
     BigInt & operator*(int rightInt);
-    BigInt & operator/(BigInt &rightInt);
+    BigInt & operator/(int rightInt);
     BigInt & operator%(BigInt &rightInt);
 
     //Overload relational operators
@@ -42,6 +42,7 @@ private:
     //private member functions
     bool lessThanTen();
     
+    BigInt & longDivision(BigInt &num1, int num2, int &remainder);
     BigInt & longMultiplication(BigInt &num1, BigInt &num2);
     BigInt & karatsuba(BigInt &num1, BigInt &num2);
     BigInt & splitTopHalf(BigInt &num, int index);

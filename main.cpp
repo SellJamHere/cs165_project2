@@ -22,10 +22,10 @@ int main()
 
     cout << endl << endl << endl;
 
-    BigInt bigInt4("100000000000000000039");
-    BigInt bigMult = bigInt4 * bigInt4;
+    BigInt bigInt4("123456");
+    BigInt bigMult = bigInt4 / 5;
     
-    cout << "bigInt4 * bigInt4 = " << bigMult << endl;
+    cout << "bigInt4 / bigInt4 = " << bigMult << endl;
 
     return 0;
 }
