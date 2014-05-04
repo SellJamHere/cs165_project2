@@ -11,7 +11,12 @@ BigInt::BigInt()
     digits.push_back(0);
 }
 
-BigInt::BigInt(BigInt* bigInt)
+BigInt::BigInt(BigInt *bigInt)
+{
+    digits = bigInt->digits;
+}
+
+BigInt::BigInt(const BigInt *bigInt)
 {
     digits = bigInt->digits;
 }
@@ -46,7 +51,7 @@ BigInt::~BigInt()
 
 }
 
-BigInt & BigInt::operator=(const string &stringInt)
+const BigInt& BigInt::operator=(const string &stringInt)
 {
     this->digits.clear();
     int size = stringInt.size();
@@ -59,107 +64,119 @@ BigInt & BigInt::operator=(const string &stringInt)
     return *this;
 }
 
-// BigInt & BigInt::operator=(const BigInt &rightInt)
-// {
-//     this->digits.clear();
-//     int size = rightInt.digits.size();
-
-//     for (int i = 0; i < size; i++)
-//     {
-//         this->digits.push_back(rightInt.digits[i]);
-//     }
-
-//     return *this;
-// }
-
-BigInt & BigInt::operator+(const BigInt &rightInt)
+BigInt BigInt::operator+(const BigInt &rightInt) const
 {
-    //find largest digit size
-    BigInt *greater;
-    BigInt lesser;
-    if (this->digits.size() > rightInt.digits.size())
-    {
-        greater = this;
-        lesser = rightInt;
-    } 
-    else
-    {
-        greater = new BigInt(rightInt);
-        lesser = *this;
-    }
-    
-    BigInt *temp = new BigInt(greater);
-    
-    int carry = 0;
-    for (int i = 0; i < lesser.digits.size(); i++)
-    {
-        temp->digits[i] = ((greater->digits[i] + lesser.digits[i] + carry) % NUMBER_BASE);
-        carry = (greater->digits[i] + lesser.digits[i] + carry) / NUMBER_BASE;
-    }
-    if(carry != 0)
-    {
-        temp->digits.push_back(carry);
-    }
-
-    return *temp;
+    BigInt sum = add(*this, rightInt);
+    return sum;
 }
 
-BigInt & BigInt::operator-(BigInt &rightInt)
+BigInt BigInt::operator+=(const BigInt &rightInt)
 {
-    int carry = 0;
-    BigInt *temp = new BigInt(*this);
-    
-    for (int i = 0; i < this->digits.size(); i++)
-    {
-        if (i >= rightInt.digits.size())
-        {
-            break;
-        }
-        int difference = temp->digits[i] - rightInt.digits[i];
-        if (difference < 0)
-        {
-            temp->digits[i + 1] = temp->digits[i + 1] - 1;
-            difference += 10;
-        }
-        temp->digits[i] = difference;
-    }
-
-    return *temp;
+    *this = *this + rightInt;
+    return *this;
 }
 
-BigInt & BigInt::operator*(BigInt &rightInt)
+BigInt BigInt::operator+=(int rightInt)
+{
+    BigInt bigRightInt(rightInt);
+    *this = *this + bigRightInt;
+    return *this;
+}
+
+BigInt BigInt::operator++(int)
+{
+    *this = *this += 1;
+    return *this;
+}
+
+BigInt BigInt::operator-(const BigInt &rightInt) const
+{
+    BigInt difference = subtract(*this, rightInt);
+
+    return difference;
+}
+
+BigInt BigInt::operator-=(const BigInt &rightInt)
+{
+    *this = *this - rightInt;
+    return *this;
+}
+
+BigInt BigInt::operator--(int)
+{
+    *this = *this -= 1;
+    return *this;
+}
+
+BigInt BigInt::operator*(const BigInt &rightInt) const
 {
     return longMultiplication(*this, rightInt);
 }
 
-BigInt & BigInt::operator*(int rightInt)
+BigInt BigInt::operator*(int rightInt) const
 {
     BigInt integer(rightInt);
     return longMultiplication(*this, integer);
 }
 
-BigInt & BigInt::operator/(int rightInt)
+BigInt BigInt::operator/(const BigInt &rightInt) const
+{
+    BigInt remainder;
+    return divideBySubtraction(*this, rightInt, remainder);
+}
+
+BigInt BigInt::operator/(int rightInt) const
 {
     int remainder = 0;
-    BigInt &returnInt = longDivision(*this, rightInt, remainder);
-    cout << remainder << endl;
+    BigInt returnInt = longDivision(*this, rightInt, remainder);
     return returnInt;
 }
 
-BigInt & BigInt::operator%(BigInt &rightInt)
+BigInt BigInt::operator%(const BigInt &rightInt) const
 {
-    return *this;
+    BigInt remainder;
+    BigInt quotient = divideBySubtraction(*this, rightInt, remainder);
+    return remainder;
 }
 
 //Overload relational operators
-
-//BigInts must not have leading zeros when > is called
-bool BigInt::operator>(BigInt &rightInt)
+bool BigInt::operator==(const BigInt &rightInt) const
 {
-    return this->digits.size() > rightInt.digits.size();
+    if (this->digits.size() != rightInt.digits.size())
+    {
+        return false;
+    }
+    for (int i = this->digits.size() - 1; i >= 0; i--)
+    {
+        if (this->digits[i] != rightInt.digits[i])
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
-ostream& operator<<(ostream &os, BigInt &bigInt)
+//BigInts must not have leading zeros when > is called
+bool BigInt::operator>(const BigInt &rightInt) const
+{
+    if (this->digits.size() > rightInt.digits.size())
+    {
+        return true;
+    }
+    else if (this->digits.size() == rightInt.digits.size())
+    {
+        for (int i = this->digits.size() - 1; i >= 0; i--)
+        {
+            if (this->digits[i] > rightInt.digits[i])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+ostream& operator<<(ostream &os, const BigInt &bigInt)
 {
     int integerSize = bigInt.digits.size();
     for (int i = integerSize - 1; i >= 0; i--)
@@ -170,12 +187,293 @@ ostream& operator<<(ostream &os, BigInt &bigInt)
 }
 
 //Private methods
-bool BigInt::lessThanTen()
+BigInt BigInt::add(const BigInt &rightInt, const BigInt &leftInt) const
 {
-    return digits.size() < 4;
+    int largestDigitStop = (leftInt.digits.size() > rightInt.digits.size()) ? rightInt.digits.size() - 1 : leftInt.digits.size() - 1;
+    
+    int sum = 0;
+    int carry = 0;
+
+    //sum digits up to smallest number
+    BigInt temp;
+    temp.digits.pop_back();
+    for (int i = 0; i <= largestDigitStop; i++)
+    {
+        sum = leftInt.digits[i] + rightInt.digits[i] + carry;
+        if (sum >= NUMBER_BASE)
+        {
+            carry = 1;
+            temp.digits.push_back(sum - NUMBER_BASE);
+        }
+        else
+        {
+            carry = 0;
+            temp.digits.push_back(sum);
+        }
+    }
+
+    //add digits of larger number
+    if (largestDigitStop == leftInt.digits.size() - 1)
+    {
+        for (int i = largestDigitStop + 1; i < rightInt.digits.size(); i++)
+        {
+            sum = rightInt.digits[i] + carry;
+            if (sum >= NUMBER_BASE)
+            {
+                carry = 1;
+                temp.digits.push_back(sum - NUMBER_BASE);
+            }
+            else
+            {
+                carry = 0;
+                temp.digits.push_back(sum);
+            }
+        }
+    }
+    else
+    {
+        for (int i = largestDigitStop + 1; i < leftInt.digits.size(); i++)
+        {
+            sum = leftInt.digits[i] + carry;
+            if (sum >= NUMBER_BASE)
+            {
+                carry = 1;
+                temp.digits.push_back(sum - NUMBER_BASE);
+            }
+            else
+            {
+                carry = 0;
+                temp.digits.push_back(sum);
+            }
+        }
+    }
+    //final carry
+    if (carry > 0)
+    {
+        temp.digits.push_back(carry);
+    }
+    removeLeadingZeros(temp);
+
+    return temp;
 }
 
-int BigInt::toInt()
+BigInt BigInt::subtract(const BigInt &leftInt, const BigInt &rightInt) const
+{
+    if (!(leftInt > rightInt) && !(leftInt == rightInt))
+    {
+        cout << leftInt << " is not greater than or equal to " << rightInt << endl;
+        return leftInt;
+    }
+    int carry = 0;
+    BigInt temp(leftInt);
+    
+    for (int i = 0; i < leftInt.digits.size(); i++)
+    {
+        if (i >= rightInt.digits.size())
+        {
+            break;
+        }
+        int difference = temp.digits[i] - rightInt.digits[i];
+        if (difference < 0)
+        {
+            //find first index that isn't zero
+            int zeroIndex = i + 1;
+            while (temp.digits[zeroIndex] == 0)
+            {
+                zeroIndex++;
+            }
+            //borrow down
+            while (zeroIndex > i)
+            {
+                temp.digits[zeroIndex] = temp.digits[zeroIndex] - 1;
+                temp.digits[zeroIndex - 1] += NUMBER_BASE;
+                zeroIndex--;
+            }
+            difference += NUMBER_BASE;
+        }
+        temp.digits[i] = difference;
+    }
+
+    removeLeadingZeros(temp);
+
+    return temp;
+}
+
+
+
+BigInt BigInt::longMultiplication(const BigInt &num1, const BigInt &num2) const
+{
+    //find largest digit size
+    BigInt greater;
+    BigInt lesser;
+    if (num1.digits.size() > num2.digits.size())
+    {
+        greater = num1;
+        lesser = num2;
+    } 
+    else
+    {
+        greater = num2;
+        lesser = num1;
+    }
+
+    BigInt temp;
+    
+    for (int i = 0; i < lesser.digits.size(); i++)
+    {
+        int carry = 0;
+        int product;
+        
+        int j;
+        for (j = 0; j < greater.digits.size(); j++)
+        {
+            if (temp.digits.size() < i + j + 1) 
+            {
+                temp.digits.push_back(0);
+            }
+            product = temp.digits[i + j] + (lesser.digits[i] * greater.digits[j]) + carry;
+            carry = product / 10;
+            temp.digits[i + j] = product % 10;
+        }
+
+        if (carry)
+        {
+            product = temp.digits[i + j] + carry;
+            carry = product / 10;
+            temp.digits[i + j] = product % 10;
+        }
+    }
+
+    removeLeadingZeros(temp);
+
+    return temp;
+}
+
+
+//doesn't work yet
+BigInt BigInt::karatsuba(const BigInt &int1, const BigInt &int2) const
+{
+    if (int1.lessThanTen() && int2.lessThanTen())
+    {
+        BigInt tempInt(int1.toInt()*int2.toInt());
+        cout << "Small Mult: " << tempInt << endl;
+        return tempInt;
+    }
+    if (int1.lessThanTen()) 
+    {
+        BigInt tempInt(longMultiplication(int1, int2));
+        cout << "Long Mult: " << tempInt << endl;
+        return tempInt;
+    }
+
+    int m = max(int1.digits.size(), int2.digits.size()) / 2;
+    
+    //Split int1
+    BigInt top1 = splitTopHalf(const_cast<BigInt &>(int1), m);
+    removeLeadingZeros(top1);
+    cout << "top1: " << top1 << "    ";
+    BigInt bottom1 = splitBottomHalf(const_cast<BigInt &>(int1), m);
+    removeLeadingZeros(bottom1);
+    cout << "bottom1: " << bottom1 << "    ";
+
+    //Split int2
+    BigInt top2 = splitTopHalf(const_cast<BigInt &>(int2), m);
+    removeLeadingZeros(top2);
+    cout << "top2: " << top2 << "    ";
+    BigInt bottom2 = splitBottomHalf(const_cast<BigInt &>(int2), m);
+    removeLeadingZeros(bottom2);
+    cout << "bottom2: " << bottom2 << "    " << endl;
+
+    BigInt z0 = karatsuba(bottom1, bottom2);
+    removeLeadingZeros(z0);
+    cout << "z0: " << z0 << endl;
+    BigInt z1 = karatsuba((bottom1 + top1), (bottom2 + top2));
+    removeLeadingZeros(z1);
+    cout << " z1: " << z1 << endl;
+    BigInt z2 = karatsuba(top1, top2);   
+    removeLeadingZeros(z2); 
+    cout << " z2: " << z2 << endl;
+        
+    BigInt temp((z2 * (int)pow(10, 2 * m)) + ((z1 - z2 - z0) * (int)pow(10, m)) + z0);
+    return temp;
+}
+
+BigInt BigInt::divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder) const
+{
+    BigInt one(1);
+    BigInt count;
+    BigInt dividend(numerator);
+
+    while (dividend > denominator || dividend == denominator)
+    {
+        dividend -= denominator;
+        count = count + one;
+    }
+    remainder = dividend;
+    return count;
+}
+
+BigInt BigInt::longDivision(const BigInt &num1, int num2, int &remainder) const
+{
+    BigInt temp;
+    int d = num1.digits[num1.digits.size() - 1];
+    
+    int i = num1.digits.size() - 1;
+    while (i >= 0)
+    {
+        int result = d / num2;
+        while (result == 0){
+            temp.digits.push_back(result);
+            d = num1.digits[i] * 10 + num1.digits[i-1];
+            i--;
+            result = d / num2;
+        }
+        
+        temp.digits.push_back(result);
+        
+        d = d - (result * num2);
+        
+        i--;
+        
+        if (result != 0)
+            d = d * 10 + num1.digits[i];
+    }
+    
+    remainder = d / num2;
+    reverse(temp.digits.begin(), temp.digits.end());
+    removeLeadingZeros(temp);
+    return temp;
+}
+
+//Helper functions
+BigInt BigInt::splitTopHalf(const BigInt &num, int index) const
+{
+    BigInt top;
+    top.digits.pop_back();
+    for (int i = index; i < num.digits.size(); i++)
+    {
+        top.digits.push_back(num.digits[i]);
+    }
+    return top;
+}
+
+BigInt BigInt::splitBottomHalf(const BigInt &num, int index) const
+{
+    BigInt bottom;
+    bottom.digits.pop_back();
+    for (int i = 0; i < index; i++)
+    {
+        bottom.digits.push_back(num.digits[i]);
+    }
+    return bottom;
+}
+
+bool BigInt::lessThanTen() const
+{
+    return digits.size() < 3;
+}
+
+int BigInt::toInt() const
 {
     if (digits.size() <= 9)
     {
@@ -193,155 +491,10 @@ int BigInt::toInt()
     }
 }
 
-BigInt & BigInt::longDivision(BigInt &num1, int num2, int &remainder)
-{
-    
-    BigInt *temp = new BigInt();
-    int d = num1.digits[num1.digits.size() - 1];
-    
-    int i = num1.digits.size() - 1;
-    while (i >= 0)
-    {
-        int result = d / num2;
-        while (result == 0){
-            temp->digits.push_back(result);
-            d = num1.digits[i] * 10 + num1.digits[i-1];
-            i--;
-            result = d / num2;
-        }
-        
-        temp->digits.push_back(result);
-        
-        d = d - (result * num2);
-        
-        i--;
-        
-        if (result != 0)
-            d = d * 10 + num1.digits[i];
-    }
-    
-    remainder = d / num2;
-    reverse(temp->digits.begin(), temp->digits.end());
-    removeLeadingZeros(*temp);
-    return *temp;
-}
-
-BigInt & BigInt::longMultiplication(BigInt &num1, BigInt &num2)
-{
-    //find largest digit size
-    BigInt greater;
-    BigInt lesser;
-    if (num1.digits.size() > num2.digits.size())
-    {
-        greater = num1;
-        lesser = num2;
-    } 
-    else
-    {
-        greater = num2;
-        lesser = num1;
-    }
-
-    BigInt *temp = new BigInt();
-    
-    for (int i = 0; i < greater.digits.size(); i++)
-    {
-        int carry = 0;
-        int product;
-        
-        int j;
-        for (j = 0; j < lesser.digits.size(); j++)
-        {
-            if (temp->digits.size() < i + j + 1)
-            {
-                temp->digits.push_back(0);
-            }
-            product = temp->digits[i + j] + (greater.digits[i] * lesser.digits[j]) + carry;
-            carry = product / 10;
-            temp->digits[i + j] = product % 10;
-        }
-
-        if (carry)
-        {
-            product = temp->digits[i + j] + carry;
-            carry = product / 10;
-            temp->digits[i + j] = product % 10;
-        }
-    }
-
-    removeLeadingZeros(*temp);
-
-    return *temp;
-}
-
-BigInt & BigInt::karatsuba(BigInt &int1, BigInt &int2)
-{
-    //Base case: for small numbers
-    // if (int1.digits.size() == 1 && int2.digits.size() == 1)
-    // {
-    //     BigInt *temp = new BigInt(int1.digits[0] * int2.digits[0]);
-    //     return *temp;
-    // }
-    if (int1.lessThanTen() || int2.lessThanTen())
-    {
-        BigInt *tempInt = new BigInt(int1.toInt()*int2.toInt());
-        cout << "Small Mult: " << *tempInt << endl;
-        return *tempInt;
-    }
-    int m = max(int1.digits.size(), int2.digits.size()) / 2;
-    
-    //Split int1
-    BigInt &top1 = splitTopHalf(int1, m);
-    cout << "top1: " << top1 << "    ";
-    BigInt &bottom1 = splitBottomHalf(int1, m);
-    cout << "bottom1: " << bottom1 << "    ";
-
-    //Split int2
-    BigInt &top2 = splitTopHalf(int2, m);
-    cout << "top2: " << top2 << "    ";
-    BigInt &bottom2 = splitBottomHalf(int2, m);
-    cout << "bottom2: " << bottom2 << "    " << endl;
-
-    BigInt &z0 = karatsuba(bottom1, bottom2);
-    cout << "z0: " << z0 << endl;
-    BigInt &z1 = karatsuba((bottom1 + top1), (bottom2 + top2));
-    cout << " z1: " << z1 << endl;
-    BigInt &z2 = karatsuba(top1, top2);    
-    cout << " z2: " << z2 << endl;
-        
-    BigInt *temp = new BigInt((z2 * (int)pow(10, 2 * m)) + ((z1 - z2 - z0) * (int)pow(10, m)) + z0);
-    return *temp;
-}
-
-BigInt & BigInt::splitTopHalf(BigInt &num, int index)
-{
-    BigInt *top = new BigInt();
-    for (int i = index; i < num.digits.size(); i++)
-    {
-        top->digits.push_back(num.digits[i]);
-    }
-    return *top;
-}
-
-BigInt & BigInt::splitBottomHalf(BigInt &num, int index)
-{
-    BigInt *bottom = new BigInt();
-    for (int i = 0; i < index; i++)
-    {
-        bottom->digits.push_back(num.digits[i]);
-    }
-    return *bottom;
-}
-
-BigInt & BigInt::divideBySubtraction(BigInt &numerator, BigInt &denominator)
-{
-
-}
-
-void BigInt::removeLeadingZeros(BigInt &bigInt)
+void BigInt::removeLeadingZeros(BigInt &bigInt) const
 {
     int i = bigInt.digits.size() - 1;
-    while (bigInt.digits[i] == 0)
+    while (bigInt.digits.size() > 1 && bigInt.digits[i] == 0)
     {
         i--;
     }

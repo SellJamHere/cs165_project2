@@ -11,26 +11,33 @@ class BigInt
 {
 public:
     BigInt();
-    BigInt(BigInt* bigInt);
+    BigInt(BigInt *bigInt);
+    BigInt(const BigInt *bigInt);
     BigInt(const string &stringInt);
     BigInt(int integer);
     ~BigInt();
-    BigInt & operator=(const string &stringInt);
-    // BigInt & operator=(const BigInt &rightInt);
-    BigInt & operator+(const BigInt &rightInt);
-    BigInt & operator-(BigInt &rightInt);
-    BigInt & operator*(BigInt &rightInt);
-    BigInt & operator*(int rightInt);
-    BigInt & operator/(int rightInt);
-    BigInt & operator%(BigInt &rightInt);
+
+    const BigInt& operator=(const string &stringInt);
+
+    //Overload arithmetic operators
+    BigInt operator+(const BigInt &rightInt) const;
+    BigInt operator+=(const BigInt &rightInt);
+    BigInt operator+=(int rightInt);
+    BigInt operator++(int);
+    BigInt operator-(const BigInt &rightInt) const;
+    BigInt operator-=(const BigInt &rightInt);
+    BigInt operator--(int);
+    BigInt operator*(const BigInt &rightInt) const;
+    BigInt operator*(int rightInt) const;
+    BigInt operator/(const BigInt &rightInt) const;
+    BigInt operator/(int rightInt) const;
+    BigInt operator%(const BigInt &rightInt) const;
 
     //Overload relational operators
-    bool operator>(BigInt &rightInt);
+    bool operator==(const BigInt &rightInt) const;
+    bool operator>(const BigInt &rightInt) const ;
 
-
-    int toInt();
-
-    friend ostream & operator<<(ostream &os, BigInt &bigInt);
+    friend ostream & operator<<(ostream &os, const BigInt &bigInt);
 
 private:
     // Store the least significant digit first, so that
@@ -40,17 +47,19 @@ private:
     vector<short> digits;
 
     //private member functions
-    bool lessThanTen();
-    
-    BigInt & longDivision(BigInt &num1, int num2, int &remainder);
-    BigInt & longMultiplication(BigInt &num1, BigInt &num2);
-    BigInt & karatsuba(BigInt &num1, BigInt &num2);
-    BigInt & splitTopHalf(BigInt &num, int index);
-    BigInt & splitBottomHalf(BigInt &num, int index);
+    BigInt add(const BigInt &rightInt, const BigInt &leftInt) const;
+    BigInt subtract(const BigInt &leftInt, const BigInt &rightInt) const;
+    BigInt longMultiplication(const BigInt &num1, const BigInt &num2) const;
+    BigInt karatsuba(const BigInt &num1, const BigInt &num2) const;
+    BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder) const;
+    BigInt longDivision(const BigInt &num1, int num2, int &remainder) const;
 
-    BigInt & divideBySubtraction(BigInt &numerator, BigInt &denominator);
-
-    void removeLeadingZeros(BigInt &bigInt);
+    //Helper functions
+    BigInt splitTopHalf(const BigInt &num, int index) const;
+    BigInt splitBottomHalf(const BigInt &num, int index) const;
+    bool lessThanTen() const;
+    int toInt() const;
+    void removeLeadingZeros(BigInt &bigInt) const;
     bool isOdd();
     
 };
