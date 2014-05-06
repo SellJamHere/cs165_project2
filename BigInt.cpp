@@ -110,7 +110,7 @@ BigInt BigInt::operator--(int)
 
 BigInt BigInt::operator*(const BigInt &rightInt) const
 {
-    return longMultiplication(*this, rightInt);
+    return multiplicationByAddition(*this, rightInt);
 }
 
 BigInt BigInt::operator*(int rightInt) const
@@ -176,6 +176,25 @@ bool BigInt::operator>(const BigInt &rightInt) const
     return false;
 }
 
+bool BigInt::operator<(const BigInt &rightInt) const
+{
+    if (this->digits.size() < rightInt.digits.size())
+    {
+        return true;
+    }
+    else if (this->digits.size() == rightInt.digits.size())
+    {
+        for (int i = this->digits.size() - 1; i >= 0; i--)
+        {
+            if (this->digits[i] < rightInt.digits[i])
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 ostream& operator<<(ostream &os, const BigInt &bigInt)
 {
     int integerSize = bigInt.digits.size();
@@ -184,6 +203,68 @@ ostream& operator<<(ostream &os, const BigInt &bigInt)
         cout << bigInt.digits[i];
     }
     return os;
+}
+
+BigInt bigPow(const BigInt &base, const BigInt &exponent)
+{
+//    cout << "base: " << base << endl;
+    BigInt power(base);
+//    cout << "power: " << power << endl;
+    BigInt i(1);
+    for (; exponent > i; i++)
+    {
+//        cout << "base: " << base << endl;
+        power = power * base;
+//        cout << "power: " << power << endl;
+    }
+
+    return power;
+}
+
+BigInt gcd(BigInt num1, BigInt num2)
+{
+    BigInt temp;
+    while (!(num2 == 0))
+    {
+        temp = num2;
+        num2 = num1 % num2;
+        num1 = temp;
+    }
+    return num1;
+}
+
+int J(BigInt x, BigInt y)
+{
+    BigInt one(1);
+    BigInt two(2);
+    if (x == one)
+    {
+        return 1;
+    }
+    else if (!x.isOdd())
+    {
+        BigInt exponent = ((bigPow(y, two) - one) / 8);
+        if (exponent.isOdd())
+        {
+            return J(x / 2, y) * -1;
+        }
+        else
+        {
+            return J(x / 2, y);
+        }
+    }
+    else
+    {
+        BigInt exponent = ((x - 1) * (y - 1) / 4);
+        if (exponent.isOdd())
+        {
+            return J(y % x, x) * -1;
+        }
+        else
+        {
+            return J(y % x, x);
+        }
+    }
 }
 
 //Private methods
@@ -295,11 +376,39 @@ BigInt BigInt::subtract(const BigInt &leftInt, const BigInt &rightInt) const
     }
 
     removeLeadingZeros(temp);
-
+//    if (temp.digits.size() == 0) {
+//        temp.digits.push_back(0);
+//    }
+    
     return temp;
 }
 
+BigInt BigInt::multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const
+{
+    //find larger
+    BigInt greater;
+    BigInt lesser;
+    if (leftInt > rightInt)
+    {
+        greater = leftInt;
+        lesser = rightInt;
+    } 
+    else
+    {
+        greater = rightInt;
+        lesser = leftInt;
+    }
+    BigInt i;
+    BigInt count;
+    BigInt sum;
 
+    for (; i < lesser; i++)
+    {
+        sum += greater;
+    }
+
+    return sum;
+}
 
 BigInt BigInt::longMultiplication(const BigInt &num1, const BigInt &num2) const
 {
@@ -406,7 +515,9 @@ BigInt BigInt::divideBySubtraction(const BigInt &numerator, const BigInt &denomi
 
     while (dividend > denominator || dividend == denominator)
     {
+//        cout << "dividend: " << dividend << endl;
         dividend -= denominator;
+//        cout << "dividend: " << dividend << endl;
         count = count + one;
     }
     remainder = dividend;
@@ -494,8 +605,10 @@ int BigInt::toInt() const
 void BigInt::removeLeadingZeros(BigInt &bigInt) const
 {
     int i = bigInt.digits.size() - 1;
-    while (bigInt.digits.size() > 1 && bigInt.digits[i] == 0)
+//    cout << "digits: " << bigInt << endl;
+    while (i >= 1 && bigInt.digits[i] == 0)
     {
+//        cout << "digits[" << i << "] = " << bigInt.digits[i] << endl;
         i--;
     }
     bigInt.digits.resize(i + 1);

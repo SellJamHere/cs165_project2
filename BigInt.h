@@ -35,9 +35,12 @@ public:
 
     //Overload relational operators
     bool operator==(const BigInt &rightInt) const;
-    bool operator>(const BigInt &rightInt) const ;
+    bool operator>(const BigInt &rightInt) const;
+    bool operator<(const BigInt &rightInt) const;
 
     friend ostream & operator<<(ostream &os, const BigInt &bigInt);
+
+    bool isOdd();
 
 private:
     // Store the least significant digit first, so that
@@ -49,6 +52,7 @@ private:
     //private member functions
     BigInt add(const BigInt &rightInt, const BigInt &leftInt) const;
     BigInt subtract(const BigInt &leftInt, const BigInt &rightInt) const;
+    BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const;
     BigInt longMultiplication(const BigInt &num1, const BigInt &num2) const;
     BigInt karatsuba(const BigInt &num1, const BigInt &num2) const;
     BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder) const;
@@ -60,8 +64,12 @@ private:
     bool lessThanTen() const;
     int toInt() const;
     void removeLeadingZeros(BigInt &bigInt) const;
-    bool isOdd();
+    
     
 };
+
+BigInt bigPow(const BigInt &base, const BigInt &exponent);
+BigInt gcd(BigInt num1, BigInt num2);
+int J(BigInt x, BigInt y);
 
 #endif
