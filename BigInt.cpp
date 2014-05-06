@@ -267,6 +267,29 @@ int J(BigInt x, BigInt y)
     }
 }
 
+
+
+int Steven(BigInt b, BigInt N)
+{
+    BigInt x((N-1)/2);
+    BigInt y(b);
+    int a = 1;
+    
+    while (x > 0)
+    {
+        if (x.isOdd()){
+            BigInt temp((y*a) % N);
+            a = temp.toInt();
+        }
+        BigInt two(2);
+        y = bigPow(y, two) % N;
+        x = x/2;
+    }
+    return a;
+}
+
+
+
 //Private methods
 BigInt BigInt::add(const BigInt &rightInt, const BigInt &leftInt) const
 {

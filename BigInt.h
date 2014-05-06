@@ -41,6 +41,8 @@ public:
     friend ostream & operator<<(ostream &os, const BigInt &bigInt);
 
     bool isOdd();
+    int toInt() const;
+
 
 private:
     // Store the least significant digit first, so that
@@ -62,7 +64,6 @@ private:
     BigInt splitTopHalf(const BigInt &num, int index) const;
     BigInt splitBottomHalf(const BigInt &num, int index) const;
     bool lessThanTen() const;
-    int toInt() const;
     void removeLeadingZeros(BigInt &bigInt) const;
     
     
@@ -71,5 +72,6 @@ private:
 BigInt bigPow(const BigInt &base, const BigInt &exponent);
 BigInt gcd(BigInt num1, BigInt num2);
 int J(BigInt x, BigInt y);
+int Steven(BigInt b, BigInt N);
 
 #endif

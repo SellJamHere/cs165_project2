@@ -43,6 +43,8 @@ int main()
     cout << "Make sure base(" << base << ") and exponent(" << exponent << ") did not change\n";
     
     cout << "J: " << J(base, exponent) << endl;
+    
+    cout << "Steven: " << Steven(base, exponent) << endl;
 
     return 0;
 }
