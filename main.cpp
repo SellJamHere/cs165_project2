@@ -28,16 +28,16 @@ int main()
     // greater--;
     cout << (lesser < greater ? "YES" : "NO") << endl;
 
-    BigInt bigInt4("46");
-    BigInt bigInt5("23");
-    BigInt bigMult = bigInt4 * bigInt5;
-    cout << bigInt4 << " * " << bigInt5 << " = " << bigMult << endl;
+    BigInt bigInt4("1");
+    BigInt bigInt5("2");
+    BigInt bigMult = bigInt4 / 2;
+    cout << bigInt4 << " / 2 = " << bigMult << endl;
 
     bigMult = bigInt4 % bigInt5;
     cout << bigInt4 << " % " << bigInt5 << " = " << bigMult << endl;
 
     BigInt base(67);
-    BigInt exponent(1000003);
+    BigInt exponent(34);
 //    cout << base << " ^ " << exponent << " = " << bigPow(base, exponent) << endl;
     cout << "GCD(" << base << ", " << exponent << ") = " << gcd(base, exponent) << endl;
     cout << "Make sure base(" << base << ") and exponent(" << exponent << ") did not change\n";
