@@ -51,7 +51,7 @@ int main()
     
     //Random number generator
     Random random;
-    int rando = random.getRandom(20);
+    int rando = random.getRandom(30);
     for (int i = 0; i<20; i++)
     {
         rando = random.getRandom(0);
