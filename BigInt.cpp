@@ -110,7 +110,7 @@ BigInt BigInt::operator--(int)
 
 BigInt BigInt::operator*(const BigInt &rightInt) const
 {
-    return multiplicationByAddition(*this, rightInt);
+    return karatsuba(*this, rightInt);
 }
 
 BigInt BigInt::operator*(int rightInt) const
@@ -267,8 +267,6 @@ int J(BigInt x, BigInt y)
     }
 }
 
-
-
 int Steven(BigInt b, BigInt N)
 {
     BigInt x((N-1)/2);
@@ -278,14 +276,27 @@ int Steven(BigInt b, BigInt N)
     while (x > 0)
     {
         if (x.isOdd()){
-            BigInt temp((y*a) % N);
+            BigInt bigA(a);
+            BigInt temp((y.multiplicationByAddition(y, bigA)) % N);
             a = temp.toInt();
         }
         BigInt two(2);
         y = bigPow(y, two) % N;
         x = x/2;
+//        cout << "x: " << x << endl;
     }
     return a;
+}
+
+bool BigInt::optimusPrime() const
+{
+    int k = 1;
+    for (int i = 0; i < k; i++) {
+        
+    }
+    
+    
+    return true;
 }
 
 
@@ -424,6 +435,7 @@ BigInt BigInt::multiplicationByAddition(const BigInt &leftInt, const BigInt &rig
     BigInt i;
     BigInt count;
     BigInt sum;
+    sum.digits.pop_back();
 
     for (; i < lesser; i++)
     {
@@ -485,16 +497,10 @@ BigInt BigInt::longMultiplication(const BigInt &num1, const BigInt &num2) const
 //doesn't work yet
 BigInt BigInt::karatsuba(const BigInt &int1, const BigInt &int2) const
 {
-    if (int1.lessThanTen() && int2.lessThanTen())
+    if (int1.lessThanTen() || int2.lessThanTen())
     {
-        BigInt tempInt(int1.toInt()*int2.toInt());
-        cout << "Small Mult: " << tempInt << endl;
-        return tempInt;
-    }
-    if (int1.lessThanTen()) 
-    {
-        BigInt tempInt(longMultiplication(int1, int2));
-        cout << "Long Mult: " << tempInt << endl;
+        BigInt tempInt(multiplicationByAddition(int1, int2));
+//        cout << "Small Mult: " << tempInt << endl;
         return tempInt;
     }
 
@@ -503,30 +509,37 @@ BigInt BigInt::karatsuba(const BigInt &int1, const BigInt &int2) const
     //Split int1
     BigInt top1 = splitTopHalf(const_cast<BigInt &>(int1), m);
     removeLeadingZeros(top1);
-    cout << "top1: " << top1 << "    ";
+//    cout << "top1: " << top1 << "    ";
     BigInt bottom1 = splitBottomHalf(const_cast<BigInt &>(int1), m);
     removeLeadingZeros(bottom1);
-    cout << "bottom1: " << bottom1 << "    ";
+//    cout << "bottom1: " << bottom1 << "    ";
 
     //Split int2
     BigInt top2 = splitTopHalf(const_cast<BigInt &>(int2), m);
     removeLeadingZeros(top2);
-    cout << "top2: " << top2 << "    ";
+//    cout << "top2: " << top2 << "    ";
     BigInt bottom2 = splitBottomHalf(const_cast<BigInt &>(int2), m);
     removeLeadingZeros(bottom2);
-    cout << "bottom2: " << bottom2 << "    " << endl;
+//    cout << "bottom2: " << bottom2 << "    " << endl;
 
     BigInt z0 = karatsuba(bottom1, bottom2);
     removeLeadingZeros(z0);
-    cout << "z0: " << z0 << endl;
+//    cout << "z0: " << z0 << endl;
     BigInt z1 = karatsuba((bottom1 + top1), (bottom2 + top2));
     removeLeadingZeros(z1);
-    cout << " z1: " << z1 << endl;
-    BigInt z2 = karatsuba(top1, top2);   
+//    cout << " z1: " << z1 << endl;
+    BigInt z2 = karatsuba(top1, top2);
     removeLeadingZeros(z2); 
-    cout << " z2: " << z2 << endl;
-        
-    BigInt temp((z2 * (int)pow(10, 2 * m)) + ((z1 - z2 - z0) * (int)pow(10, m)) + z0);
+//    cout << " z2: " << z2 << endl;
+    
+    BigInt ten(10);
+    BigInt two(2);
+//    BigInt bigM(m);
+    BigInt part1(z2.shiftLeft(m * 2));
+    BigInt part2((z1 - z2 - z0).shiftLeft(m / 2));
+    part2 = part2.shiftLeft(m);
+    
+    BigInt temp(part1 + part2 + z0);
     return temp;
 }
 
@@ -549,6 +562,11 @@ BigInt BigInt::divideBySubtraction(const BigInt &numerator, const BigInt &denomi
 
 BigInt BigInt::longDivision(const BigInt &num1, int num2, int &remainder) const
 {
+    //return 0 if num1 < num2
+    BigInt bigNum2(num2);
+    if (num1 < bigNum2) {
+        return 0;
+    }
     BigInt temp;
     int d = num1.digits[num1.digits.size() - 1];
     
@@ -604,7 +622,7 @@ BigInt BigInt::splitBottomHalf(const BigInt &num, int index) const
 
 bool BigInt::lessThanTen() const
 {
-    return digits.size() < 3;
+    return digits.size() < 2;
 }
 
 int BigInt::toInt() const
@@ -647,4 +665,15 @@ bool BigInt::isOdd()
         cout << "Integer is size <= 0";
         return false;
     }
+}
+
+BigInt BigInt::shiftLeft(int digits) const
+{
+    BigInt temp(this);
+    for (int i = 0; i < digits; i++) {
+        vector<short>::iterator it = temp.digits.begin();
+        it = temp.digits.insert(it , 0);
+    }
+    
+    return temp;
 }

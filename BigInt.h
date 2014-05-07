@@ -42,6 +42,11 @@ public:
 
     bool isOdd();
     int toInt() const;
+    BigInt shiftLeft(int digits) const;
+    
+    
+    BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const;
+    bool optimusPrime() const;
 
 
 private:
@@ -54,7 +59,6 @@ private:
     //private member functions
     BigInt add(const BigInt &rightInt, const BigInt &leftInt) const;
     BigInt subtract(const BigInt &leftInt, const BigInt &rightInt) const;
-    BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const;
     BigInt longMultiplication(const BigInt &num1, const BigInt &num2) const;
     BigInt karatsuba(const BigInt &num1, const BigInt &num2) const;
     BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder) const;
