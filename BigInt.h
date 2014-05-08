@@ -44,9 +44,8 @@ public:
     int toInt() const;
     BigInt shiftLeft(int digits) const;
     
+    bool optimusPrime() ;
     
-    BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const;
-    bool optimusPrime() const;
 
 
 private:
@@ -57,25 +56,31 @@ private:
     vector<short> digits;
 
     //private member functions
-    BigInt add(const BigInt &rightInt, const BigInt &leftInt) const;
-    BigInt subtract(const BigInt &leftInt, const BigInt &rightInt) const;
-    BigInt longMultiplication(const BigInt &num1, const BigInt &num2) const;
-    BigInt karatsuba(const BigInt &num1, const BigInt &num2) const;
-    BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder) const;
-    BigInt longDivision(const BigInt &num1, int num2, int &remainder) const;
-
-    //Helper functions
-    BigInt splitTopHalf(const BigInt &num, int index) const;
-    BigInt splitBottomHalf(const BigInt &num, int index) const;
     bool lessThanTen() const;
-    void removeLeadingZeros(BigInt &bigInt) const;
-    
+
+    //Helper friend functions
+    friend void removeLeadingZeros(BigInt &bigInt);
+
+    //Helper arithmetic functions
+    friend BigInt add(const BigInt &rightInt, const BigInt &leftInt);
+    friend BigInt subtract(const BigInt &leftInt, const BigInt &rightInt);
+
+    friend BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt);
+    friend BigInt longMultiplication(const BigInt &num1, const BigInt &num2);
+    friend BigInt karatsuba(const BigInt &num1, const BigInt &num2);
+    friend BigInt splitTopHalf(const BigInt &num, int index);
+    friend BigInt splitBottomHalf(const BigInt &num, int index);
+
+    friend BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder);
+    friend BigInt longDivision(const BigInt &num1, int num2, int &remainder);
+
+    friend BigInt bigPow(const BigInt &base, const BigInt &exponent);
+    friend BigInt gcd(BigInt num1, BigInt num2);
+    friend int J(BigInt x, BigInt y);
+    friend int Steven(BigInt b, BigInt N);
     
 };
 
-BigInt bigPow(const BigInt &base, const BigInt &exponent);
-BigInt gcd(BigInt num1, BigInt num2);
-int J(BigInt x, BigInt y);
-int Steven(BigInt b, BigInt N);
+
 
 #endif

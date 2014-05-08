@@ -38,5 +38,5 @@ double dshrandom( long input ) {
 
 int Random::getRandom(long input)
 {
-    return (int)dshrandom(input)*100;
+    return (int)(dshrandom(input)*1000);
 }

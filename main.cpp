@@ -2,6 +2,7 @@
 
 #include "BigInt.h"
 #include "Random.h"
+#include "Timer.h"
 #include <string>
 
 using namespace std;
@@ -38,27 +39,32 @@ int main()
     bigMult = bigInt4 % bigInt5;
     cout << bigInt4 << " % " << bigInt5 << " = " << bigMult << endl;
 
-    BigInt base(67);
-    BigInt exponent(34);
-//    cout << base << " ^ " << exponent << " = " << bigPow(base, exponent) << endl;
-    cout << "GCD(" << base << ", " << exponent << ") = " << gcd(base, exponent) << endl;
-    cout << "Make sure base(" << base << ") and exponent(" << exponent << ") did not change\n";
+//     BigInt base(67);
+//     BigInt exponent(34);
+// //    cout << base << " ^ " << exponent << " = " << bigPow(base, exponent) << endl;
+//     cout << "GCD(" << base << ", " << exponent << ") = " << gcd(base, exponent) << endl;
+//     cout << "Make sure base(" << base << ") and exponent(" << exponent << ") did not change\n";
     
-    cout << "J: " << J(base, exponent) << endl;
+//     cout << "J: " << J(base, exponent) << endl;
     
-    cout << "Steven: " << Steven(base, exponent) << endl;
+//     cout << "Steven: " << Steven(base, exponent) << endl;
     
     
-    //Random number generator
-    Random random;
-    int rando = random.getRandom(20);
-    for (int i = 0; i<20; i++)
-    {
-        rando = random.getRandom(0);
-        cout << "Random number: " << rando << endl;
-    }
-    cout << "Random number: " << rando << endl;
-    
+//     //Random number generator
+//     Random random;
+//     int rando = random.getRandom(20);
+//     for (int i = 0; i<20; i++)
+//     {
+//         rando = random.getRandom(0);
+//         cout << "Random number: " << rando << endl;
+//     }
+//     cout << "Random number: " << rando << endl;
 
+    BigInt bigPrime("331");
+    bool prime = bigPrime.optimusPrime();
+    cout << "Prime? " << prime;
+
+    cout << globalTimer << endl;
+    
     return 0;
 }
