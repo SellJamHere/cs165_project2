@@ -4,6 +4,9 @@
 #include <time.h>
 #include <math.h>
 
+#include "Timer.h"
+#include "Random.h"
+
 #define NUMBER_BASE 10
 
 const int ASCII_0 = 48;
@@ -210,13 +213,14 @@ ostream& operator<<(ostream &os, const BigInt &bigInt)
     int integerSize = bigInt.digits.size();
     for (int i = integerSize - 1; i >= 0; i--)
     {
-        cout << bigInt.digits[i];
+        os << bigInt.digits[i];
     }
     return os;
 }
 
 BigInt bigPow(const BigInt &base, const BigInt &exponent)
 {
+    // globalTimer.beginFunction("bigPow");
 //    cout << "base: " << base << endl;
     BigInt power(base);
 //    cout << "power: " << power << endl;
@@ -227,12 +231,13 @@ BigInt bigPow(const BigInt &base, const BigInt &exponent)
         power = power * base;
 //        cout << "power: " << power << endl;
     }
-
+    // globalTimer.endFunction("bigPow");
     return power;
 }
 
 BigInt gcd(BigInt num1, BigInt num2)
 {
+    // globalTimer.beginFunction("gcd");
     BigInt temp;
     while (!(num2 == 0))
     {
@@ -240,6 +245,7 @@ BigInt gcd(BigInt num1, BigInt num2)
         num2 = num1 % num2;
         num1 = temp;
     }
+    // globalTimer.endFunction("gcd");
     return num1;
 }
 
@@ -247,28 +253,30 @@ int J(BigInt x, BigInt y)
 {
     BigInt one(1);
     BigInt two(2);
+    BigInt four(4);
+    BigInt eight(8);
     if (x == one)
     {
         return 1;
     }
     else if (!x.isOdd())
     {
-        BigInt exponent = ((bigPow(y, two) - one) / 8);
+        BigInt exponent = ((bigPow(y, two) - one) / eight);
         if (exponent.isOdd())
         {
-            return J(x / 2, y) * -1;
+            return J(x / two, y) * - 1;
         }
         else
         {
-            return J(x / 2, y);
+            return J(x / two, y);
         }
     }
     else
     {
-        BigInt exponent = ((x - 1) * (y - 1) / 4);
+        BigInt exponent = ((x - one) * (y - one) / four);
         if (exponent.isOdd())
         {
-            return J(y % x, x) * -1;
+            return J(y % x, x) * - 1;
         }
         else
         {
@@ -279,32 +287,48 @@ int J(BigInt x, BigInt y)
 
 int Steven(BigInt b, BigInt N)
 {
-    BigInt x((N-1)/2);
+    BigInt zero;
+    BigInt one(1);
+    BigInt two(2);
+    BigInt x((N-one)/two);
     BigInt y(b);
     int a = 1;
     
-    while (x > 0)
+    while (x > zero)
     {
         if (x.isOdd()){
             BigInt bigA(a);
-            BigInt temp((y.multiplicationByAddition(y, bigA)) % N);
+            BigInt temp(multiplicationByAddition(y, bigA) % N);
             a = temp.toInt();
         }
-        BigInt two(2);
-        y = bigPow(y, two) % N;
-        x = x/2;
+        // BigInt two(2);
+        y = karatsuba(y, y) % N;
+        x = x/two;
 //        cout << "x: " << x << endl;
     }
     return a;
 }
 
-bool BigInt::optimusPrime() const
+bool BigInt::optimusPrime() 
 {
-    int k = 1;
+    Random randomGenerator;
+    BigInt one(1);
+    int k = 10;
+    // BigInt bigK(k);
     for (int i = 0; i < k; i++) {
-        
+        BigInt b(randomGenerator.getRandom(0));
+        cout << "b: " << b << endl;
+        BigInt j(J(b,*this));
+        BigInt steven(Steven(b,*this));
+        steven = steven;
+        BigInt Gcd;
+        Gcd = gcd(b,*this);
+        cout << "gcd: " << Gcd << " J: " << j << " Steven: " << steven << endl;
+        if (!(Gcd == one && j == steven))
+        {
+            return false;
+        }
     }
-    
     
     return true;
 }
@@ -312,7 +336,7 @@ bool BigInt::optimusPrime() const
 
 
 //Private methods
-BigInt BigInt::add(const BigInt &rightInt, const BigInt &leftInt) const
+BigInt add(const BigInt &rightInt, const BigInt &leftInt)
 {
     int largestDigitStop = (leftInt.digits.size() > rightInt.digits.size()) ? rightInt.digits.size() - 1 : leftInt.digits.size() - 1;
     
@@ -382,8 +406,9 @@ BigInt BigInt::add(const BigInt &rightInt, const BigInt &leftInt) const
     return temp;
 }
 
-BigInt BigInt::subtract(const BigInt &leftInt, const BigInt &rightInt) const
+BigInt subtract(const BigInt &leftInt, const BigInt &rightInt)
 {
+    
     if (!(leftInt > rightInt) && !(leftInt == rightInt))
     {
         cout << leftInt << " is not greater than or equal to " << rightInt << endl;
@@ -427,7 +452,7 @@ BigInt BigInt::subtract(const BigInt &leftInt, const BigInt &rightInt) const
     return temp;
 }
 
-BigInt BigInt::multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const
+BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt)
 {
     //find larger
     BigInt greater;
@@ -455,7 +480,7 @@ BigInt BigInt::multiplicationByAddition(const BigInt &leftInt, const BigInt &rig
     return sum;
 }
 
-BigInt BigInt::longMultiplication(const BigInt &num1, const BigInt &num2) const
+BigInt longMultiplication(const BigInt &num1, const BigInt &num2)
 {
     //find largest digit size
     BigInt greater;
@@ -505,7 +530,7 @@ BigInt BigInt::longMultiplication(const BigInt &num1, const BigInt &num2) const
 
 
 //doesn't work yet
-BigInt BigInt::karatsuba(const BigInt &int1, const BigInt &int2) const
+BigInt karatsuba(const BigInt &int1, const BigInt &int2)
 {
     if (int1.lessThanTen() || int2.lessThanTen())
     {
@@ -553,7 +578,7 @@ BigInt BigInt::karatsuba(const BigInt &int1, const BigInt &int2) const
     return temp;
 }
 
-BigInt BigInt::divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder) const
+BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder)
 {
     BigInt one(1);
     BigInt count;
@@ -570,7 +595,7 @@ BigInt BigInt::divideBySubtraction(const BigInt &numerator, const BigInt &denomi
     return count;
 }
 
-BigInt BigInt::longDivision(const BigInt &num1, int num2, int &remainder) const
+BigInt longDivision(const BigInt &num1, int num2, int &remainder) 
 {
     //return 0 if num1 < num2
     BigInt bigNum2(num2);
@@ -608,7 +633,7 @@ BigInt BigInt::longDivision(const BigInt &num1, int num2, int &remainder) const
 }
 
 //Helper functions
-BigInt BigInt::splitTopHalf(const BigInt &num, int index) const
+BigInt splitTopHalf(const BigInt &num, int index) 
 {
     BigInt top;
     top.digits.pop_back();
@@ -619,7 +644,7 @@ BigInt BigInt::splitTopHalf(const BigInt &num, int index) const
     return top;
 }
 
-BigInt BigInt::splitBottomHalf(const BigInt &num, int index) const
+BigInt splitBottomHalf(const BigInt &num, int index) 
 {
     BigInt bottom;
     bottom.digits.pop_back();
@@ -663,6 +688,9 @@ void removeLeadingZeros(BigInt &bigInt)
         i--;
     }
     bigInt.digits.resize(i + 1);
+    if (bigInt.digits.size() == 0) {
+        bigInt.digits.push_back(0);
+    }
 }
 
 bool BigInt::isOdd()
