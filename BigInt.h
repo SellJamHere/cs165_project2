@@ -43,6 +43,7 @@ public:
     bool isOdd();
     int toInt() const;
     BigInt shiftLeft(int digits) const;
+    friend BigInt randomize(BigInt N);
     
     
     BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt) const;
@@ -68,7 +69,7 @@ private:
     BigInt splitTopHalf(const BigInt &num, int index) const;
     BigInt splitBottomHalf(const BigInt &num, int index) const;
     bool lessThanTen() const;
-    void removeLeadingZeros(BigInt &bigInt) const;
+    friend void removeLeadingZeros(BigInt &bigInt);
     
     
 };

@@ -1,5 +1,7 @@
 #include "BigInt.h"
+#include "Random.h"
 
+#include <time.h>
 #include <math.h>
 
 #define NUMBER_BASE 10
@@ -171,6 +173,10 @@ bool BigInt::operator>(const BigInt &rightInt) const
             {
                 return true;
             }
+            else if (this->digits[i] < rightInt.digits[i])
+            {
+                return false;
+            }
         }
     }
     return false;
@@ -189,6 +195,10 @@ bool BigInt::operator<(const BigInt &rightInt) const
             if (this->digits[i] < rightInt.digits[i])
             {
                 return true;
+            }
+            else if (this->digits[i] > rightInt.digits[i])
+            {
+                return false;
             }
         }
     }
@@ -643,7 +653,7 @@ int BigInt::toInt() const
     }
 }
 
-void BigInt::removeLeadingZeros(BigInt &bigInt) const
+void removeLeadingZeros(BigInt &bigInt)
 {
     int i = bigInt.digits.size() - 1;
 //    cout << "digits: " << bigInt << endl;
@@ -676,4 +686,57 @@ BigInt BigInt::shiftLeft(int digits) const
     }
     
     return temp;
+}
+
+time_t timer;
+Random r;
+int r1 = r.getRandom(time(&timer));
+
+BigInt randomize(BigInt N)
+{
+    bool same = false;
+    BigInt random(N);
+    
+    do {
+        for (int i = N.digits.size()-1; i >= 0; i--)
+        {
+            r1 = r.getRandom(0);
+            cout << "Random number: " << r1 << endl;
+            if (r1 > N.digits[i])
+            break;
+            while (i == N.digits.size()-1 && r1 == N.digits[i])
+            {
+                random.digits[i] = r1;
+                r1 = r.getRandom(0);
+                if (r1 > N.digits[i-1])
+                {
+                    random = N;
+                    break;
+                }
+                else{
+                    random.digits[i-1] = r1;
+                    same = true;
+                    i = i-2;
+                }
+            }
+            if (same == true)
+            {
+                r1 = r.getRandom(0);
+                if (r1 > N.digits[i]){
+                    random = N;
+                    break;
+                }
+                if (r1 == N.digits[i])
+                same = true;
+                else
+                same = false;
+            }
+            
+            random.digits[i] = r1;
+        }
+ 
+    } while (random > N || random == N);
+    
+    removeLeadingZeros(random);
+    return random;
 }

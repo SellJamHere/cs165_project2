@@ -29,8 +29,8 @@ int main()
     // greater--;
     cout << (lesser < greater ? "YES" : "NO") << endl;
 
-    BigInt bigInt4("400");
-    BigInt bigInt5("23");
+    BigInt bigInt4("576");
+    BigInt bigInt5("331");
     BigInt bigMult = bigInt4 * bigInt5;
     cout << bigInt4 << " * " << bigInt5 << " = " << bigMult << endl;
 
@@ -50,14 +50,19 @@ int main()
     
     
     //Random number generator
-    Random random;
-    int rando = random.getRandom(30);
-    for (int i = 0; i<20; i++)
-    {
-        rando = random.getRandom(0);
-        cout << "Random number: " << rando << endl;
-    }
-    cout << "Random number: " << rando << endl;
+//    Random random;
+//    int rando = random.getRandom(30);
+//    for (int i = 0; i<20; i++)
+//    {
+//        rando = random.getRandom(0);
+//        cout << "Random number: " << rando << endl;
+//    }
+//    cout << "Random number: " << rando << endl;
+    
+    //Random number from 0 to
+    BigInt bigInt6("1000");
+    BigInt ran = randomize(bigInt6);
+    cout << "Random number between 0 and " << bigInt6 << " : " << ran << endl;
     
 
     return 0;
