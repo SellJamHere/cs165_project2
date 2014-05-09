@@ -9,6 +9,16 @@ using namespace std;
 
 int main()
 {
+    while (true)
+    {
+    string bint;
+    cout << "Please enter a number terminated by a carriage return: " << endl;
+    getline (cin, bint);
+    
+    BigInt B(bint);
+    
+    //cout << "You entered the big integer: " << B << endl;
+    
     BigInt bigInt(23);
     // cout << bigInt.toInt() << endl;
     // cout << bigInt << endl;
@@ -19,16 +29,16 @@ int main()
     // cout << bigInt2.toInt() << endl;
     BigInt bigInt3 = bigInt + bigInt2;
 
-    cout << bigInt << " + "  << bigInt2 << " = " << bigInt3 << endl;
+    //cout << bigInt << " + "  << bigInt2 << " = " << bigInt3 << endl;
     bigInt3 = bigInt - bigInt2;
-    cout << bigInt << " - " << bigInt2 << " = " << bigInt3 << endl;
+    //cout << bigInt << " - " << bigInt2 << " = " << bigInt3 << endl;
 
-    cout << endl << endl << endl;
+    cout << endl << endl;
 
     BigInt greater(0);
     BigInt lesser("0");
     // greater--;
-    cout << (lesser < greater ? "YES" : "NO") << endl;
+    //cout << (lesser < greater ? "YES" : "NO") << endl;
 
     BigInt bigInt4("12431210");
     BigInt bigInt5("32311");
@@ -37,7 +47,7 @@ int main()
 
 
     bigMult = bigInt4 % bigInt5;
-    cout << bigInt4 << " % " << bigInt5 << " = " << bigMult << endl;
+    //cout << bigInt4 << " % " << bigInt5 << " = " << bigMult << endl;
 
 //     BigInt base(67);
 //     BigInt exponent(34);
@@ -63,7 +73,7 @@ int main()
     //Random number from 0 to
     BigInt bigInt6("1000");
     BigInt ran = randomize(bigInt6);
-    cout << "Random number between 0 and " << bigInt6 << " : " << ran << endl;
+    //cout << "Random number between 0 and " << bigInt6 << " : " << ran << endl;
     
 //     //Random number generator
 //     Random random;
@@ -75,11 +85,29 @@ int main()
 //     }
 //     cout << "Random number: " << rando << endl;
 
-    // BigInt bigPrime("10009887");
-    // bool prime = bigPrime.BumbleBee();
-    // cout << "Prime? " << prime;
+    //BigInt bigPrime("331");
+    //bool result = MillerLite(bigPrime, 10);
+    bool prime = B.BumbleBee();
+    
+    if (prime == 0)
+    {
+        cout << "The number: " << endl;
+        cout << B << endl;
+        cout << "is not prime. The next prime number is: " << endl;
+        cout << "shit" << endl;
+    }
+    else if (prime == 1)
+    {
+        cout << "The number: " << endl;
+        cout << B << endl;
+        cout << "is prime." << endl;
+    }
+    //cout << "Prime? " << prime;
+    //cout << "Prime with miller? " << result;
+
 
     cout << globalTimer << endl;
     
-    return 0;
+    //return 0;
+    }
 }

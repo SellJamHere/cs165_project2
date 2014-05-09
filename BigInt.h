@@ -43,7 +43,9 @@ public:
     bool isOdd();
     int toInt() const;
     BigInt shiftLeft(int digits) const;
+    BigInt shiftRight(int digits) const;
     friend BigInt randomize(BigInt N);
+    friend bool MillerLite(BigInt N, int k);
     
     bool optimusPrime();
     bool BumbleBee();
@@ -83,6 +85,7 @@ private:
     friend BigInt longDivision(const BigInt &num1, int num2, int &remainder);
 
     friend BigInt bigPow(const BigInt &base, const BigInt &exponent);
+    friend BigInt fastPow(const BigInt &base, const BigInt &exponent, const BigInt N);
     friend BigInt gcd(BigInt num1, BigInt num2);
     friend int J(BigInt x, BigInt y);
     friend int Steven(BigInt b, BigInt N);

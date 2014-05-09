@@ -224,6 +224,8 @@ ostream& operator<<(ostream &os, const BigInt &bigInt)
     return os;
 }
 
+
+
 BigInt bigPow(const BigInt &base, const BigInt &exponent)
 {
     // globalTimer.beginFunction("bigPow");
@@ -241,6 +243,28 @@ BigInt bigPow(const BigInt &base, const BigInt &exponent)
     // globalTimer.endFunction("bigPow");
     return power;
 }
+
+
+BigInt fastPow(const BigInt &base, const BigInt &exponent, const BigInt N)
+{
+    BigInt result(1);
+    BigInt power(exponent);
+    BigInt value(base);
+    BigInt zero;
+    BigInt two(2);
+    
+    while (power > zero)
+    {
+        result = result * value;
+        result = result % N;
+    }
+    value = value * value;
+    value = value % N;
+    power = power / two;
+    
+    return result;
+}
+
 
 BigInt gcd(BigInt num1, BigInt num2)
 {
@@ -318,11 +342,55 @@ int Steven(BigInt b, BigInt N)
         // BigInt two(2);
         //y = bigPow(y, two) % N;
         y = karatsuba(y, y) % N;
+        //y = fastPow(y, two, N);
         x = x/two;
 //        cout << "x: " << x << endl;
     }
     return a;
 }
+
+
+bool MillerLite(BigInt N, int k)
+{
+    BigInt d;
+    BigInt s;
+    BigInt x;
+    BigInt one(1);
+    BigInt two(2);
+    BigInt zero;
+    
+    /* find s and d so that d * 2^s = n - 1 */
+    BigInt minus(N - one);
+    //d = minus;
+    s = minus;
+    while((s % two) == zero)
+    {
+        //d = d / two;
+        s = s.shiftRight(1);
+    }
+    
+    for (int i = 0; i < k; i++)
+    {
+        BigInt a = randomize(N)+one;
+        BigInt temp = s;
+        x = fastPow(a, s, N);
+        
+//        for (int j = 1; j < s.toInt(); j++)
+//            a = a*a;
+//        x = a % N;
+        while (!(temp == minus) && !(x == one) && !(x == minus))
+        {
+            x = (x*x) % N;
+            temp = temp*two;
+            
+            if(!(x == minus) && (temp%two == zero))
+                return false;
+        }
+    }
+    
+    return true;
+}
+
 
 BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N)
 {
@@ -352,6 +420,11 @@ BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N)
 bool BigInt::BumbleBee()
 {
     BigInt one(1);
+    BigInt two(2);
+    BigInt zero;
+    
+    if(*this % two == zero)
+        return false;
     
     for (int counter = 0; counter < 10; counter++)
     {
@@ -944,6 +1017,19 @@ BigInt BigInt::shiftLeft(int digits) const
     for (int i = 0; i < digits; i++) {
         vector<short>::iterator it = temp.digits.begin();
         it = temp.digits.insert(it , 0);
+    }
+    
+    return temp;
+}
+
+BigInt BigInt::shiftRight(int digits) const
+{
+    BigInt temp(this);
+    BigInt two(2);
+    for (int i = 0; i < digits; i++) {
+        vector<short>::iterator it = temp.digits.begin();
+        it = temp.digits.erase(it);
+        //temp = temp / two;
     }
     
     return temp;
