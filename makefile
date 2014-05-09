@@ -1,10 +1,10 @@
 ## makefile for Project 2
 ##
-a.out		:		main.o cTimer.o BigInt.o Random.o Timer.o 
-					g++ main.o cTimer.o BigInt.o Random.o Timer.o
+a.out		:		main.o cTimer.o BigInt.o Random.o 
+					g++ main.o cTimer.o BigInt.o Random.o
 					@echo "Linking files together..."
 
-main.o		:		main.cpp cTimer.c BigInt.cpp Random.cpp Timer.cpp
+main.o		:		main.cpp cTimer.c BigInt.cpp Random.cpp
 					g++ -c main.cpp
 					@echo "Compiling main.cpp ..."
 
@@ -19,10 +19,6 @@ BigInt		:		BigInt.cpp
 Random		:		Random.cpp
 					g++ -c Random.cpp
 					@echo "compiling Random.cpp ..."
-
-Timer		:		Timer.cpp
-					g++ -c Timer.cpp
-					@echo "Compiling Timer.cpp ..."
 
 clean		:	
 					@echo "cleaning up after make, removing object files..."

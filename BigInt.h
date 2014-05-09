@@ -41,16 +41,9 @@ public:
     friend ostream & operator<<(ostream &os, const BigInt &bigInt);
 
     bool isOdd();
-    int toInt() const;
-    BigInt shiftLeft(int digits) const;
-    BigInt shiftRight(int digits) const;
-    friend BigInt randomize(BigInt N);
-    friend bool MillerLite(BigInt N, int k);
     
-    bool optimusPrime();
-    bool BumbleBee();
-    
-
+    //Functions to find the prime
+    bool BumbleBee(); //Works! Uses Fermat's theorem
 
 private:
     // Store the least significant digit first, so that
@@ -59,16 +52,17 @@ private:
     // eg. 1234 --> [4][3][2][1]
     vector<short> digits;
 
-    int* digitsToArray() const;
-    void arrayToDigits(int *digits, int size);
-
     //private member functions
     bool lessThanTen() const;
-    // friend void removeLeadingZeros(BigInt &bigInt);
-    
+    int* digitsToArray() const;
+    void arrayToDigits(int *digits, int size);
+    BigInt shiftLeft(int digits) const;
+    BigInt shiftRight(int digits) const;
+    int toInt() const;
 
     //Helper friend functions
     friend void removeLeadingZeros(BigInt &bigInt);
+    friend BigInt randomize(BigInt N);
 
     //Helper arithmetic functions
     friend BigInt add(const BigInt &rightInt, const BigInt &leftInt);
@@ -76,9 +70,7 @@ private:
 
     friend BigInt multiplicationByAddition(const BigInt &leftInt, const BigInt &rightInt);
     friend BigInt longMultiplication(const BigInt &num1, const BigInt &num2);
-    friend BigInt karatsuba(const BigInt &num1, const BigInt &num2);
-    friend BigInt splitTopHalf(const BigInt &num, int index);
-    friend BigInt splitBottomHalf(const BigInt &num, int index);
+    friend void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &int3);
 
     friend BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder);
     friend BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder);
@@ -86,14 +78,17 @@ private:
 
     friend BigInt bigPow(const BigInt &base, const BigInt &exponent);
     friend BigInt fastPow(const BigInt &base, const BigInt &exponent, const BigInt N);
-    friend BigInt gcd(BigInt num1, BigInt num2);
-    friend int J(BigInt x, BigInt y);
-    friend int Steven(BigInt b, BigInt N);
+
     friend BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N);
     friend BigInt nextPrime(const BigInt &N);
 
-    friend void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &int3);
-    
+
+    //unused methods
+    friend BigInt gcd(BigInt num1, BigInt num2); //euclid's
+    friend int J(BigInt x, BigInt y); //jacobi symbol
+    friend int Steven(BigInt b, BigInt N); //congruence
+    friend bool MillerLite(BigInt N, int k);
+    bool optimusPrime();
 };
 
 

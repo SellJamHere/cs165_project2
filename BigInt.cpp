@@ -4,9 +4,6 @@
 #include <time.h>
 #include <math.h>
 
-#include "Timer.h"
-// #include "Random.h"
-
 using namespace std;
 
 #define NUMBER_BASE 10
@@ -224,173 +221,28 @@ ostream& operator<<(ostream &os, const BigInt &bigInt)
     return os;
 }
 
-
+bool BigInt::isOdd()
+{
+    if (digits.size() > 0)
+    {
+        return digits[0] % 2 == 1;
+    }
+    else {
+        cout << "Integer is size <= 0";
+        return false;
+    }
+}
 
 BigInt bigPow(const BigInt &base, const BigInt &exponent)
 {
-    // globalTimer.beginFunction("bigPow");
-//    cout << "base: " << base << endl;
     BigInt power(base);
-//    cout << "power: " << power << endl;
     BigInt i(1);
-    //for (; exponent > i; i++)
     for (BigInt j(1); j < exponent; j++)
     {
-//        cout << "base: " << base << endl;
         power = power * base;
-//        cout << "power: " << power << endl;
     }
-    // globalTimer.endFunction("bigPow");
     return power;
 }
-
-
-BigInt fastPow(const BigInt &base, const BigInt &exponent, const BigInt N)
-{
-    BigInt result(1);
-    BigInt power(exponent);
-    BigInt value(base);
-    BigInt zero;
-    BigInt two(2);
-    
-    while (power > zero)
-    {
-        result = result * value;
-        result = result % N;
-    }
-    value = value * value;
-    value = value % N;
-    power = power / two;
-    
-    return result;
-}
-
-
-BigInt gcd(BigInt num1, BigInt num2)
-{
-    // globalTimer.beginFunction("gcd");
-    BigInt temp;
-    while (!(num2 == 0))
-    {
-        temp = num2;
-        num2 = num1 % num2;
-        num1 = temp;
-    }
-    // globalTimer.endFunction("gcd");
-    return num1;
-}
-
-int J(BigInt x, BigInt y)
-{
-    BigInt one(1);
-    BigInt two(2);
-    BigInt four(4);
-    BigInt eight(8);
-    if (x == one)
-    {
-        return 1;
-    }
-    else if (!x.isOdd())
-    {
-        BigInt exponent = ((bigPow(y, two) - one) / eight);
-        cout << "exponent: " << exponent << endl;
-        
-        //return (J(x/two, y) * bigPow(-1, exponent));
-        if (exponent.isOdd())
-        {
-            return J(x / two, y) * - 1;
-        }
-        else
-        {
-            return J(x / two, y);
-        }
-    }
-    else
-    {
-        BigInt exponent = ((x - one) * (y - one) / four);
-        
-        //return (J(y % x, x) * bigPow(-1, exponent));
-        if (exponent.isOdd())
-        {
-            return J(y % x, x) * - 1;
-        }
-        else
-        {
-            return J(y % x, x);
-        }
-    }
-}
-
-int Steven(BigInt b, BigInt N)
-{
-    BigInt zero;
-    BigInt one(1);
-    BigInt two(2);
-    BigInt x((N-one)/two);
-    BigInt y(b);
-    int a = 1;
-    
-    //return bigPow(b, ((N-one)/two));
-    
-    while (x > zero)
-    {
-        if (x.isOdd()){
-            BigInt bigA(a);
-            BigInt temp(multiplicationByAddition(y, bigA) % N);
-            a = temp.toInt();
-        }
-        // BigInt two(2);
-        //y = bigPow(y, two) % N;
-        y = karatsuba(y, y) % N;
-        //y = fastPow(y, two, N);
-        x = x/two;
-//        cout << "x: " << x << endl;
-    }
-    return a;
-}
-
-
-bool MillerLite(BigInt N, int k)
-{
-    BigInt d;
-    BigInt s;
-    BigInt x;
-    BigInt one(1);
-    BigInt two(2);
-    BigInt zero;
-    
-    /* find s and d so that d * 2^s = n - 1 */
-    BigInt minus(N - one);
-    //d = minus;
-    s = minus;
-    while((s % two) == zero)
-    {
-        //d = d / two;
-        s = s.shiftRight(1);
-    }
-    
-    for (int i = 0; i < k; i++)
-    {
-        BigInt a = randomize(N)+one;
-        BigInt temp = s;
-        x = fastPow(a, s, N);
-        
-//        for (int j = 1; j < s.toInt(); j++)
-//            a = a*a;
-//        x = a % N;
-        while (!(temp == minus) && !(x == one) && !(x == minus))
-        {
-            x = (x*x) % N;
-            temp = temp*two;
-            
-            if(!(x == minus) && (temp%two == zero))
-                return false;
-        }
-    }
-    
-    return true;
-}
-
 
 BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N)
 {
@@ -426,9 +278,8 @@ bool BigInt::BumbleBee()
     if(*this % two == zero)
         return false;
     
-    for (int counter = 0; counter < 10; counter++)
+    for (int counter = 0; counter < 8; counter++)
     {
-        // cout << "i: " << counter << endl;
         if (!(Eric(randomize(*this), *this - one, *this) == one))
             return false;
     }
@@ -485,36 +336,110 @@ BigInt nextPrime(const BigInt &N)
 
 
 
-bool BigInt::optimusPrime() 
+//Private methods
+
+bool BigInt::lessThanTen() const
 {
-    // Random randomGenerator;
-    BigInt one(1);
-    BigInt zero;
-    int k = 10;
-    // BigInt bigK(k);
-    for (int i = 0; i < k; i++) {
-        BigInt b(randomize(*this));
-        cout << "b: " << b << endl;
-        BigInt j(J(b,*this));
-        BigInt steven(Steven(b,*this));
-        steven = steven;
-        
-        
-        BigInt Gcd;
-        Gcd = gcd(b,*this);
-        cout << "gcd: " << Gcd << " J: " << j << " Steven: " << steven << endl;
-        if (!(Gcd == one && ((j - steven) == zero)))
-        {
-            return false;
-        }
-    }
-    
-    return true;
+    return digits.size() < 2;
 }
 
+int BigInt::toInt() const
+{
+    if (digits.size() <= 9)
+    {
+        int toInt = 0;
+        for (int i = digits.size() - 1; i >= 0; i--)
+        {
+            toInt += digits[i] * pow(10, i);
+        }  
+        return toInt;
+    }
+    else
+    {
+        cout << "BigInt too large for int representation.\n";
+        return -1;
+    }
+}
 
+void removeLeadingZeros(BigInt &bigInt)
+{
+    int i = bigInt.digits.size() - 1;
+    while (i >= 1 && bigInt.digits[i] == 0)
+    {
+        i--;
+    }
+    bigInt.digits.resize(i + 1);
+    if (bigInt.digits.size() == 0) {
+        bigInt.digits.push_back(0);
+    }
+}
 
-//Private methods
+BigInt BigInt::shiftLeft(int digits) const
+{
+    BigInt temp(this);
+    for (int i = 0; i < digits; i++) {
+        vector<short>::iterator it = temp.digits.begin();
+        it = temp.digits.insert(it , 0);
+    }
+    
+    return temp;
+}
+
+BigInt BigInt::shiftRight(int digits) const
+{
+    BigInt temp(this);
+    BigInt two(2);
+    for (int i = 0; i < digits; i++) {
+        vector<short>::iterator it = temp.digits.begin();
+        it = temp.digits.erase(it);
+    }
+    
+    return temp;
+}
+
+time_t timer;
+Random r;
+int r1 = r.getRandom(time(&timer));
+
+BigInt randomize(BigInt N)
+{
+    BigInt random(N);
+    
+    for (int i = N.digits.size()-1; i >= 0; i--)
+    {
+        r1 = r.getRandom(0);
+        random.digits[i] = r1;
+    }
+    
+    random = (random % (N - 1)) + 1;
+    
+    
+    removeLeadingZeros(random);
+    return random;
+}
+
+//allocate on heap. less to worry about overflows. but don't forget to delete
+//for the love of god, don't forget to delete
+int* BigInt::digitsToArray() const {
+    int *array = new int[digits.size() * 10];
+
+    for (int i = 0; i < digits.size(); i++)
+    {
+        array[i] = digits[i];
+    }
+
+    return array;
+}
+
+void BigInt::arrayToDigits(int *arrayDigits, int size)
+{
+    digits.resize(size, 0);
+    for (int i = 0; i < size; i++)
+    {
+        digits[i] = arrayDigits[i];
+    }
+}
+
 BigInt add(const BigInt &rightInt, const BigInt &leftInt)
 {
     int largestDigitStop = (leftInt.digits.size() > rightInt.digits.size()) ? rightInt.digits.size() - 1 : leftInt.digits.size() - 1;
@@ -624,9 +549,6 @@ BigInt subtract(const BigInt &leftInt, const BigInt &rightInt)
     }
 
     removeLeadingZeros(temp);
-//    if (temp.digits.size() == 0) {
-//        temp.digits.push_back(0);
-//    }
     
     return temp;
 }
@@ -707,59 +629,6 @@ BigInt longMultiplication(const BigInt &num1, const BigInt &num2)
     return temp;
 }
 
-
-//doesn't work yet
-BigInt karatsuba(const BigInt &int1, const BigInt &int2)
-{
-    if (int1.lessThanTen() || int2.lessThanTen())
-    {
-        BigInt tempInt(multiplicationByAddition(int1, int2));
-//        cout << "Small Mult: " << tempInt << endl;
-        return tempInt;
-    }
-
-    int m = max(int1.digits.size(), int2.digits.size()) / 2;
-    
-    //Split int1
-    BigInt top1 = splitTopHalf(const_cast<BigInt &>(int1), m);
-    //removeLeadingZeros(top1);
-//    cout << "top1: " << top1 << "    ";
-    BigInt bottom1 = splitBottomHalf(const_cast<BigInt &>(int1), m);
-    //removeLeadingZeros(bottom1);
-//    cout << "bottom1: " << bottom1 << "    ";
-
-    //Split int2
-    BigInt top2 = splitTopHalf(const_cast<BigInt &>(int2), m);
-    //removeLeadingZeros(top2);
-//    cout << "top2: " << top2 << "    ";
-    BigInt bottom2 = splitBottomHalf(const_cast<BigInt &>(int2), m);
-    //removeLeadingZeros(bottom2);
-//    cout << "bottom2: " << bottom2 << "    " << endl;
-
-    BigInt z0 = karatsuba(bottom1, bottom2);
-    removeLeadingZeros(z0);
-//    cout << "z0: " << z0 << endl;
-    BigInt z1 = karatsuba((bottom1 - top1), (bottom2 - top2));
-    removeLeadingZeros(z1);
-//    cout << " z1: " << z1 << endl;
-    BigInt z2 = karatsuba(top1, top2);
-    removeLeadingZeros(z2);
-//    cout << " z2: " << z2 << endl;
-    
-    BigInt ten(10);
-    BigInt two(2);
-//    BigInt bigM(m);
-    BigInt part1(z2.shiftLeft(m * 2));
-    BigInt part2((z2 + z0 - z1).shiftLeft(m));
-    //BigInt part2((z1 - z2 - z0).shiftLeft(m));
-    //part2 = part2.shiftLeft(m);
-    
-    BigInt temp(part1 + part2 + z0);
-    
-    //cout << "Result of karatsuba: " << temp << endl;
-    return temp;
-}
-
 void gradeSchool(int *a, int *b, int *ret, int d) {
     int             i, j;
 
@@ -831,6 +700,38 @@ void arrayKaratsuba(int *a, int *b, int *ret, int d) {
     for(i = 0; i < d; i++) ret[i + d/2] += x3[i];
 }
 
+
+void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &result)
+{
+    int largestSize = (int1 > int2) ? int1.digits.size() : int2.digits.size();
+    int             d_a = int1.digits.size(); 
+    int             d_b = int2.digits.size(); 
+    int             j; 
+
+
+    int *arrayInt1 = int1.digitsToArray();
+    int *arrayInt2 = int2.digitsToArray();
+
+    // let d be the smallest power of 2 greater than d_a and d_b,
+    // and zero out the rest of a and b.
+    j = (d_a > d_b) ? d_a : d_b;
+    for(largestSize = 1; largestSize < j; largestSize *= 2);
+    for(j = d_a; j < largestSize; j++) arrayInt1[j] = 0;
+    for(j = d_b; j < largestSize; j++) arrayInt2[j] = 0;
+
+    int *resultArray = new int[largestSize * 10];
+
+    arrayKaratsuba(arrayInt1, arrayInt2, resultArray, largestSize);
+    doCarry(resultArray, 2 * largestSize);
+
+    result.arrayToDigits(resultArray, largestSize * 2);
+    removeLeadingZeros(result);
+
+    delete[] arrayInt1;
+    delete[] arrayInt2;
+    delete[] resultArray;
+}
+
 BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder)
 {
     BigInt one(1);
@@ -839,9 +740,7 @@ BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, B
 
     while (dividend > denominator || dividend == denominator)
     {
-//        cout << "dividend: " << dividend << endl;
         dividend -= denominator;
-//        cout << "dividend: " << dividend << endl;
         count = count + one;
     }
     remainder = dividend;
@@ -850,37 +749,6 @@ BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, B
 
 BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder)
 {
-    // BigInt one(1);
-    // BigInt zero(0);
-
-    // cout << "divide" << endl;
-    // if (D > N || D == N)
-    // {
-    //     return zero;
-    // }
-
-    // BigInt Q;
-    // Q.digits.reserve(N.digits.size());
-    // BigInt R;
-    // R.digits.reserve(N.digits.size());
-
-    // BigInt i(N.digits.size() - 1);
-    // for (; i > zero || i == zero; i = i - one)
-    // {
-    //     R.shiftLeft(1);
-    //     cout << "R: " << R << endl;
-    //     cout << "digits: " << N << endl;
-    //     cout << "i: " << i << endl;
-    //     R.digits[0] = N.digits.at(i.toInt());
-    //     cout << "Here" << endl;
-    //     if (R > D || R == D)
-    //     {
-    //         Q.digits[i.toInt()] = 1;
-    //     }
-    //     cout << "Q: " << Q << " R: " << R << endl;
-    // }
-    // return Q;
-
     BigInt finalResult;
     finalResult.digits.pop_back();
 
@@ -890,10 +758,6 @@ BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder)
     BigInt top;
     top.digits.pop_back();
     BigInt denom(D);
-    // cout << "denom: " << denom << endl;
-
-    // BigInt remain;
-
     
     int nextDigitOfNumer = numerSize - denomSize;
 
@@ -917,24 +781,11 @@ BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder)
 
     do
     {
-        
-
-        // cout << "nextDON: " << nextDigitOfNumer << endl;
-        // cout << "top: " << top << endl;
-
-        
         BigInt result(divideBySubtraction(top, denom, remainder));
-        // cout << "result: " << result << endl;
-        // cout << "remainder: " << remainder << endl;
 
         finalResult.digits.push_back(result.digits[0]);
-        // cout << "finalResult: " << finalResult << endl;
-
         top = remainder;
 
-        // cout << "newTop: " << top << endl;
-
-        // nextDigitOfNumer = nextDigitOfNumer - 1;
         if (nextDigitOfNumer >= - 1 && remainder < D)
         {
             vector<short>::iterator it = top.digits.begin();
@@ -943,9 +794,6 @@ BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder)
         nextDigitOfNumer = nextDigitOfNumer - 1;
     } while(nextDigitOfNumer >= - 1 && remainder < D);
 
-    // reverse(remainder.digits.begin(), remainder.digits.end());
-    // removeLeadingZeros(top);
-    // remainder = top;
     reverse(finalResult.digits.begin(), finalResult.digits.end());
     return finalResult;
 }
@@ -987,178 +835,166 @@ BigInt longDivision(const BigInt &num1, int num2, int &remainder)
     return temp;
 }
 
-//Helper functions
-BigInt splitTopHalf(const BigInt &num, int index) 
+
+
+//Unused functions
+BigInt gcd(BigInt num1, BigInt num2)
 {
-    BigInt top;
-    top.digits.pop_back();
-    for (int i = index; i < num.digits.size(); i++)
+    BigInt temp;
+    while (!(num2 == 0))
     {
-        top.digits.push_back(num.digits[i]);
+        temp = num2;
+        num2 = num1 % num2;
+        num1 = temp;
     }
-    return top;
+    return num1;
 }
 
-BigInt splitBottomHalf(const BigInt &num, int index) 
+int J(BigInt x, BigInt y)
 {
-    BigInt bottom;
-    bottom.digits.pop_back();
-    for (int i = 0; i < index; i++)
+    BigInt one(1);
+    BigInt two(2);
+    BigInt four(4);
+    BigInt eight(8);
+    if (x == one)
     {
-        bottom.digits.push_back(num.digits[i]);
+        return 1;
     }
-    return bottom;
-}
-
-bool BigInt::lessThanTen() const
-{
-    return digits.size() < 2;
-}
-
-int BigInt::toInt() const
-{
-    if (digits.size() <= 9)
+    else if (!x.isOdd())
     {
-        int toInt = 0;
-        for (int i = digits.size() - 1; i >= 0; i--)
+        BigInt exponent = ((bigPow(y, two) - one) / eight);
+        cout << "exponent: " << exponent << endl;
+        
+        if (exponent.isOdd())
         {
-            toInt += digits[i] * pow(10, i);
-        }  
-        return toInt;
+            return J(x / two, y) * - 1;
+        }
+        else
+        {
+            return J(x / two, y);
+        }
     }
     else
     {
-        cout << "BigInt too large for int representation.\n";
-        return -1;
+        BigInt exponent = ((x - one) * (y - one) / four);
+        
+        if (exponent.isOdd())
+        {
+            return J(y % x, x) * - 1;
+        }
+        else
+        {
+            return J(y % x, x);
+        }
     }
 }
 
-void removeLeadingZeros(BigInt &bigInt)
+int Steven(BigInt b, BigInt N)
 {
-    int i = bigInt.digits.size() - 1;
-//    cout << "digits: " << bigInt << endl;
-    while (i >= 1 && bigInt.digits[i] == 0)
-    {
-//        cout << "digits[" << i << "] = " << bigInt.digits[i] << endl;
-        i--;
-    }
-    bigInt.digits.resize(i + 1);
-    if (bigInt.digits.size() == 0) {
-        bigInt.digits.push_back(0);
-    }
-}
-
-bool BigInt::isOdd()
-{
-    if (digits.size() > 0)
-    {
-        return digits[0] % 2 == 1;
-    }
-    else {
-        cout << "Integer is size <= 0";
-        return false;
-    }
-}
-
-BigInt BigInt::shiftLeft(int digits) const
-{
-    BigInt temp(this);
-    for (int i = 0; i < digits; i++) {
-        vector<short>::iterator it = temp.digits.begin();
-        it = temp.digits.insert(it , 0);
-    }
-    
-    return temp;
-}
-
-BigInt BigInt::shiftRight(int digits) const
-{
-    BigInt temp(this);
+    BigInt zero;
+    BigInt one(1);
     BigInt two(2);
-    for (int i = 0; i < digits; i++) {
-        vector<short>::iterator it = temp.digits.begin();
-        it = temp.digits.erase(it);
-        //temp = temp / two;
-    }
+    BigInt x((N-one)/two);
+    BigInt y(b);
+    int a = 1;
     
-    return temp;
-}
-
-time_t timer;
-Random r;
-int r1 = r.getRandom(time(&timer));
-
-BigInt randomize(BigInt N)
-{
-    BigInt random(N);
-    
-    for (int i = N.digits.size()-1; i >= 0; i--)
+    while (x > zero)
     {
-        r1 = r.getRandom(0);
-        random.digits[i] = r1;
+        if (x.isOdd()){
+            BigInt bigA(a);
+            BigInt temp(multiplicationByAddition(y, bigA) % N);
+            a = temp.toInt();
+        }
+        karatsubaArrayWrapper(y, y, y);
+        y = y % N;
+        x = x/two;
     }
-    
-    random = (random % (N - 1)) + 1;
-    
-    
-    removeLeadingZeros(random);
-    return random;
+    return a;
 }
 
-//allocate on heap. less to worry about overflows. but don't forget to delete
-//for the love of god, don't forget to delete
-int* BigInt::digitsToArray() const {
-    int *array = new int[digits.size() * 10];
 
-    for (int i = 0; i < digits.size(); i++)
-    {
-        array[i] = digits[i];
-    }
-
-    return array;
-}
-
-void BigInt::arrayToDigits(int *arrayDigits, int size)
+bool MillerLite(BigInt N, int k)
 {
-    digits.resize(size, 0);
-    for (int i = 0; i < size; i++)
+    BigInt d;
+    BigInt s;
+    BigInt x;
+    BigInt one(1);
+    BigInt two(2);
+    BigInt zero;
+    
+    /* find s and d so that d * 2^s = n - 1 */
+    BigInt minus(N - one);
+    //d = minus;
+    s = minus;
+    while((s % two) == zero)
     {
-        digits[i] = arrayDigits[i];
+        //d = d / two;
+        s = s.shiftRight(1);
     }
+    
+    for (int i = 0; i < k; i++)
+    {
+        BigInt a = randomize(N)+one;
+        BigInt temp = s;
+        x = fastPow(a, s, N);
+
+        while (!(temp == minus) && !(x == one) && !(x == minus))
+        {
+            x = (x*x) % N;
+            temp = temp*two;
+            
+            if(!(x == minus) && (temp%two == zero))
+                return false;
+        }
+    }
+    
+    return true;
 }
 
-void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &result)
+BigInt fastPow(const BigInt &base, const BigInt &exponent, const BigInt N)
 {
-    int largestSize = (int1 > int2) ? int1.digits.size() : int2.digits.size();
+    BigInt result(1);
+    BigInt power(exponent);
+    BigInt value(base);
+    BigInt zero;
+    BigInt two(2);
+    
+    while (power > zero)
+    {
+        result = result * value;
+        result = result % N;
+    }
+    value = value * value;
+    value = value % N;
+    power = power / two;
+    
+    return result;
+}
 
-    // int             a[largestSize]; // first multiplicand
-    // int             b[largestSize]; // second multiplicand
-    // int             r[6 * largestSize]; // result goes here
-    int             d_a = int1.digits.size(); // length of a
-    int             d_b = int2.digits.size(); // length of b
-    // int             d; // maximum length
-    int             j; // counter
 
-
-    int *arrayInt1 = int1.digitsToArray();
-    int *arrayInt2 = int2.digitsToArray();
-
-    // let d be the smallest power of 2 greater than d_a and d_b,
-    // and zero out the rest of a and b.
-    j = (d_a > d_b) ? d_a : d_b;
-    for(largestSize = 1; largestSize < j; largestSize *= 2);
-    for(j = d_a; j < largestSize; j++) arrayInt1[j] = 0;
-    for(j = d_b; j < largestSize; j++) arrayInt2[j] = 0;
-
-    int *resultArray = new int[largestSize * 10];
-
-    arrayKaratsuba(arrayInt1, arrayInt2, resultArray, largestSize);
-    doCarry(resultArray, 2 * largestSize);
-
-    result.arrayToDigits(resultArray, largestSize * 2);
-    removeLeadingZeros(result);
-
-    delete[] arrayInt1;
-    delete[] arrayInt2;
-    delete[] resultArray;
+bool BigInt::optimusPrime() 
+{
+    // Random randomGenerator;
+    BigInt one(1);
+    BigInt zero;
+    int k = 10;
+    // BigInt bigK(k);
+    for (int i = 0; i < k; i++) {
+        BigInt b(randomize(*this));
+        cout << "b: " << b << endl;
+        BigInt j(J(b,*this));
+        BigInt steven(Steven(b,*this));
+        steven = steven;
+        
+        
+        BigInt Gcd;
+        Gcd = gcd(b,*this);
+        cout << "gcd: " << Gcd << " J: " << j << " Steven: " << steven << endl;
+        if (!(Gcd == one && ((j - steven) == zero)))
+        {
+            return false;
+        }
+    }
+    
+    return true;
 }
