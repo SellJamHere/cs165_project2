@@ -30,8 +30,8 @@ int main()
     // greater--;
     cout << (lesser < greater ? "YES" : "NO") << endl;
 
-    BigInt bigInt4("576");
-    BigInt bigInt5("331");
+    BigInt bigInt4("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000289");
+    BigInt bigInt5("1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000289");
     BigInt bigMult = bigInt4 * bigInt5;
     cout << bigInt4 << " * " << bigInt5 << " = " << bigMult << endl;
 
@@ -75,9 +75,9 @@ int main()
 //     }
 //     cout << "Random number: " << rando << endl;
 
-    BigInt bigPrime("331");
-    bool prime = bigPrime.optimusPrime();
-    cout << "Prime? " << prime;
+    // BigInt bigPrime("331");
+    // bool prime = bigPrime.optimusPrime();
+    // cout << "Prime? " << prime;
 
     cout << globalTimer << endl;
     

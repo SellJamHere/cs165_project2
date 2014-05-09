@@ -56,6 +56,9 @@ private:
     // eg. 1234 --> [4][3][2][1]
     vector<short> digits;
 
+    int* digitsToArray() const;
+    void arrayToDigits(int *digits, int size);
+
     //private member functions
     bool lessThanTen() const;
     friend void removeLeadingZeros(BigInt &bigInt);
@@ -81,6 +84,8 @@ private:
     friend BigInt gcd(BigInt num1, BigInt num2);
     friend int J(BigInt x, BigInt y);
     friend int Steven(BigInt b, BigInt N);
+
+    friend void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &int3);
     
 };
 
