@@ -317,12 +317,12 @@ int Steven(BigInt b, BigInt N)
 
 bool BigInt::optimusPrime() 
 {
-    Random randomGenerator;
+    // Random randomGenerator;
     BigInt one(1);
     int k = 10;
     // BigInt bigK(k);
     for (int i = 0; i < k; i++) {
-        BigInt b(randomGenerator.getRandom(0));
+        BigInt b(randomize(*this));
         cout << "b: " << b << endl;
         BigInt j(J(b,*this));
         BigInt steven(Steven(b,*this));
@@ -856,16 +856,16 @@ void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &resul
     for(j = d_a; j < largestSize; j++) arrayInt1[j] = 0;
     for(j = d_b; j < largestSize; j++) arrayInt2[j] = 0;
 
-    for (int i = int1.digits.size() - 1; i >= 0; i--)
-    {
-        cout << arrayInt1[i];
-    }
-    cout << endl;
-    for (int i = int2.digits.size() - 1; i >= 0; i--)
-    {
-        cout << arrayInt2[i];
-    }
-    cout << endl;
+    // for (int i = int1.digits.size() - 1; i >= 0; i--)
+    // {
+    //     cout << arrayInt1[i];
+    // }
+    // cout << endl;
+    // for (int i = int2.digits.size() - 1; i >= 0; i--)
+    // {
+    //     cout << arrayInt2[i];
+    // }
+    // cout << endl;
 
     int *resultArray = new int[largestSize * 10];
 
