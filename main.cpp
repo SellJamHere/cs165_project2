@@ -75,8 +75,8 @@ int main()
 //     }
 //     cout << "Random number: " << rando << endl;
 
-    BigInt bigPrime("331");
-    bool prime = bigPrime.optimusPrime();
+    BigInt bigPrime("1000988765412345678900987654321345678909876543");
+    bool prime = bigPrime.BumbleBee();
     cout << "Prime? " << prime;
 
     cout << globalTimer << endl;
