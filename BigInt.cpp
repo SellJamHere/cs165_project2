@@ -7,9 +7,13 @@
 #include "Timer.h"
 #include "Random.h"
 
+using namespace std;
+
 #define NUMBER_BASE 10
 
 const int ASCII_0 = 48;
+
+void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &result);
 
 BigInt::BigInt()
 {
@@ -115,7 +119,9 @@ BigInt BigInt::operator--(int)
 
 BigInt BigInt::operator*(const BigInt &rightInt) const
 {
-    return karatsuba(*this, rightInt);
+    BigInt result;
+    karatsubaArrayWrapper(*this, rightInt, result);
+    return result;
 }
 
 BigInt BigInt::operator*(int rightInt) const
@@ -593,6 +599,74 @@ BigInt karatsuba(const BigInt &int1, const BigInt &int2)
     return temp;
 }
 
+void gradeSchool(int *a, int *b, int *ret, int d) {
+    int             i, j;
+
+    for(i = 0; i < 2 * d; i++) ret[i] = 0;
+    for(i = 0; i < d; i++) {
+        for(j = 0; j < d; j++) ret[i + j] += a[i] * b[j];
+    }
+}
+
+void doCarry(int *a, int d) {
+    int             c;
+    int             i;
+
+    c = 0;
+    for(i = 0; i < d; i++) {
+        a[i] += c;
+        if(a[i] < 0) {
+            c = -(-(a[i] + 1) / 10 + 1);
+        } else {
+            c = a[i] / 10;
+        }
+        a[i] -= c * 10;
+    }
+    if(c != 0) fprintf(stderr, "Overflow %d\n", c);
+}
+
+// ret must have space for 6d digits.
+// the result will be in only the first 2d digits
+// my use of the space in ret is pretty creative.
+// | ar*br  | al*bl  | asum*bsum | lower-recursion space | asum | bsum |
+//  d digits d digits  d digits     3d digits              d/2    d/2
+void arrayKaratsuba(int *a, int *b, int *ret, int d) {
+    int             i;
+    int             *ar = &a[0]; // low-order half of a
+    int             *al = &a[d/2]; // high-order half of a
+    int             *br = &b[0]; // low-order half of b
+    int             *bl = &b[d/2]; // high-order half of b
+    int             *asum = &ret[d * 5]; // sum of a's halves
+    int             *bsum = &ret[d * 5 + d/2]; // sum of b's halves
+    int             *x1 = &ret[d * 0]; // ar*br's location
+    int             *x2 = &ret[d * 1]; // al*bl's location
+    int             *x3 = &ret[d * 2]; // asum*bsum's location
+
+    // when d is small, we're better off just reverting to
+    // grade-school multiplication, since it's faster at this point.
+    if(d <= 2) {
+        gradeSchool(a, b, ret, d);
+        return;
+    }
+
+    // compute asum and bsum
+    for(i = 0; i < d / 2; i++) {
+        asum[i] = al[i] + ar[i];
+        bsum[i] = bl[i] + br[i];
+    }
+
+    // do recursive calls (I have to be careful about the order,
+    // since the scratch space for the recursion on x1 includes
+    // the space used for x2 and x3)
+    arrayKaratsuba(ar, br, x1, d/2);
+    arrayKaratsuba(al, bl, x2, d/2);
+    arrayKaratsuba(asum, bsum, x3, d/2);
+
+    // combine recursive steps
+    for(i = 0; i < d; i++) x3[i] = x3[i] - x1[i] - x2[i];
+    for(i = 0; i < d; i++) ret[i + d/2] += x3[i];
+}
+
 BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder)
 {
     BigInt one(1);
@@ -750,4 +824,73 @@ BigInt randomize(BigInt N)
     
     removeLeadingZeros(random);
     return random;
+}
+
+//allocate on heap. less to worry about overflows. but don't forget to delete
+//for the love of god, don't forget to delete
+int* BigInt::digitsToArray() const {
+    int *array = new int[digits.size() * 10];
+
+    for (int i = 0; i < digits.size(); i++)
+    {
+        array[i] = digits[i];
+    }
+
+    return array;
+}
+
+void BigInt::arrayToDigits(int *arrayDigits, int size)
+{
+    digits.resize(size, 0);
+    for (int i = 0; i < size; i++)
+    {
+        digits[i] = arrayDigits[i];
+    }
+}
+
+void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &result)
+{
+    int largestSize = (int1 > int2) ? int1.digits.size() : int2.digits.size();
+
+    // int             a[largestSize]; // first multiplicand
+    // int             b[largestSize]; // second multiplicand
+    // int             r[6 * largestSize]; // result goes here
+    int             d_a = int1.digits.size(); // length of a
+    int             d_b = int2.digits.size(); // length of b
+    // int             d; // maximum length
+    int             j; // counter
+
+
+    int *arrayInt1 = int1.digitsToArray();
+    int *arrayInt2 = int2.digitsToArray();
+
+    // let d be the smallest power of 2 greater than d_a and d_b,
+    // and zero out the rest of a and b.
+    j = (d_a > d_b) ? d_a : d_b;
+    for(largestSize = 1; largestSize < j; largestSize *= 2);
+    for(j = d_a; j < largestSize; j++) arrayInt1[j] = 0;
+    for(j = d_b; j < largestSize; j++) arrayInt2[j] = 0;
+
+    for (int i = int1.digits.size() - 1; i >= 0; i--)
+    {
+        cout << arrayInt1[i];
+    }
+    cout << endl;
+    for (int i = int2.digits.size() - 1; i >= 0; i--)
+    {
+        cout << arrayInt2[i];
+    }
+    cout << endl;
+
+    int *resultArray = new int[largestSize * 10];
+
+    arrayKaratsuba(arrayInt1, arrayInt2, resultArray, largestSize);
+    doCarry(resultArray, 2 * largestSize);
+
+    result.arrayToDigits(resultArray, largestSize * 2);
+    removeLeadingZeros(result);
+
+    delete[] arrayInt1;
+    delete[] arrayInt2;
+    delete[] resultArray;
 }
