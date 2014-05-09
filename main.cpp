@@ -94,7 +94,8 @@ int main()
         cout << "The number: " << endl;
         cout << B << endl;
         cout << "is not prime. The next prime number is: " << endl;
-        cout << "shit" << endl;
+        BigInt next = nextPrime(B);
+        cout << next << endl;
     }
     else if (prime == 1)
     {

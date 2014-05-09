@@ -89,6 +89,7 @@ private:
     friend int J(BigInt x, BigInt y);
     friend int Steven(BigInt b, BigInt N);
     friend BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N);
+    friend BigInt nextPrime(const BigInt &N);
 
     friend void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &int3);
     
