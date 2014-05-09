@@ -45,7 +45,8 @@ public:
     BigInt shiftLeft(int digits) const;
     friend BigInt randomize(BigInt N);
     
-    bool optimusPrime() ;
+    bool optimusPrime();
+    bool BumbleBee();
     
 
 
@@ -84,6 +85,7 @@ private:
     friend BigInt gcd(BigInt num1, BigInt num2);
     friend int J(BigInt x, BigInt y);
     friend int Steven(BigInt b, BigInt N);
+    friend BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N);
 
     friend void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &int3);
     

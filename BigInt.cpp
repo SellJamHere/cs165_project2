@@ -324,6 +324,45 @@ int Steven(BigInt b, BigInt N)
     return a;
 }
 
+BigInt Eric(const BigInt &a, const BigInt &i, const BigInt &N)
+{
+    BigInt one(1);
+    BigInt two(2);
+    BigInt zero;
+    
+    if (i == 0)
+        return one;
+    
+    BigInt x = Eric(a, i/two, N);
+    if (x == 0)
+        return zero;
+    
+    BigInt y = (x*x) % N;
+    if (y == 1 && !(x == 1) && !(x == (N-one)))
+        return zero;
+    
+    if (!(i % 2 == 0))
+        y = (a * y) % N;
+    
+    
+    return y;
+}
+
+
+bool BigInt::BumbleBee()
+{
+    BigInt one(1);
+    
+    for (int counter = 0; counter < 10; counter++)
+        if (!(Eric(randomize(*this), *this - one, *this) == one))
+            return false;
+    
+    return true;
+}
+
+
+
+
 bool BigInt::optimusPrime() 
 {
     Random randomGenerator;
@@ -871,16 +910,16 @@ void karatsubaArrayWrapper(const BigInt &int1, const BigInt &int2, BigInt &resul
     for(j = d_a; j < largestSize; j++) arrayInt1[j] = 0;
     for(j = d_b; j < largestSize; j++) arrayInt2[j] = 0;
 
-    for (int i = int1.digits.size() - 1; i >= 0; i--)
-    {
-        cout << arrayInt1[i];
-    }
-    cout << endl;
-    for (int i = int2.digits.size() - 1; i >= 0; i--)
-    {
-        cout << arrayInt2[i];
-    }
-    cout << endl;
+//    for (int i = int1.digits.size() - 1; i >= 0; i--)
+//    {
+//        cout << arrayInt1[i];
+//    }
+//    cout << endl;
+//    for (int i = int2.digits.size() - 1; i >= 0; i--)
+//    {
+//        cout << arrayInt2[i];
+//    }
+//    cout << endl;
 
     int *resultArray = new int[largestSize * 10];
 
