@@ -437,6 +437,52 @@ bool BigInt::BumbleBee()
 }
 
 
+BigInt nextPrime(const BigInt &N)
+{
+    BigInt num(N);
+    //int num = 97;
+    BigInt prime(0);
+    BigInt i;
+    BigInt nextPrime;
+    BigInt one(1);
+    BigInt two(2);
+    BigInt zero;
+    //int prime = 0,i,nextPrime;
+    for(int i = 2; i < num.toInt()/2; i++)
+    {
+        BigInt ii(i);
+        if(num % ii == zero)
+        {
+            prime = one;
+            break;
+        }
+    }
+    //printf("Prime : %d",prime);
+    if(prime == one)
+    {
+        nextPrime = num;
+        prime = one;
+        while(!(prime == zero))
+        {
+            nextPrime = nextPrime + one;
+            prime = zero;
+            for(int i = 2; i < nextPrime.toInt()/2; i++)
+            {
+                BigInt ii(i);
+                if(nextPrime % ii == 0)
+                { 
+                    prime = one;
+                    break; 
+                } 
+            } 
+            
+        }
+        return nextPrime;
+        //printf("\nNext prime number is : %d\n",nextPrime);
+    }
+    return nextPrime;
+}
+
 
 
 bool BigInt::optimusPrime() 
