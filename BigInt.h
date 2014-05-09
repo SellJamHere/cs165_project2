@@ -62,7 +62,7 @@ private:
 
     //private member functions
     bool lessThanTen() const;
-    friend void removeLeadingZeros(BigInt &bigInt);
+    // friend void removeLeadingZeros(BigInt &bigInt);
     
 
     //Helper friend functions
@@ -79,6 +79,7 @@ private:
     friend BigInt splitBottomHalf(const BigInt &num, int index);
 
     friend BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, BigInt &remainder);
+    friend BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder);
     friend BigInt longDivision(const BigInt &num1, int num2, int &remainder);
 
     friend BigInt bigPow(const BigInt &base, const BigInt &exponent);

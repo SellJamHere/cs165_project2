@@ -5,7 +5,7 @@
 #include <math.h>
 
 #include "Timer.h"
-#include "Random.h"
+// #include "Random.h"
 
 using namespace std;
 
@@ -133,7 +133,7 @@ BigInt BigInt::operator*(int rightInt) const
 BigInt BigInt::operator/(const BigInt &rightInt) const
 {
     BigInt remainder;
-    return divideBySubtraction(*this, rightInt, remainder);
+    return divideFast(*this, rightInt, remainder);
 }
 
 BigInt BigInt::operator/(int rightInt) const
@@ -146,7 +146,7 @@ BigInt BigInt::operator/(int rightInt) const
 BigInt BigInt::operator%(const BigInt &rightInt) const
 {
     BigInt remainder;
-    BigInt quotient = divideBySubtraction(*this, rightInt, remainder);
+    BigInt quotient = divideFast(*this, rightInt, remainder);
     return remainder;
 }
 
@@ -354,8 +354,11 @@ bool BigInt::BumbleBee()
     BigInt one(1);
     
     for (int counter = 0; counter < 10; counter++)
+    {
+        cout << "i: " << counter << endl;
         if (!(Eric(randomize(*this), *this - one, *this) == one))
             return false;
+    }
     
     return true;
 }
@@ -721,6 +724,108 @@ BigInt divideBySubtraction(const BigInt &numerator, const BigInt &denominator, B
     }
     remainder = dividend;
     return count;
+}
+
+BigInt divideFast(const BigInt &N, const BigInt &D, BigInt &remainder)
+{
+    // BigInt one(1);
+    // BigInt zero(0);
+
+    // cout << "divide" << endl;
+    // if (D > N || D == N)
+    // {
+    //     return zero;
+    // }
+
+    // BigInt Q;
+    // Q.digits.reserve(N.digits.size());
+    // BigInt R;
+    // R.digits.reserve(N.digits.size());
+
+    // BigInt i(N.digits.size() - 1);
+    // for (; i > zero || i == zero; i = i - one)
+    // {
+    //     R.shiftLeft(1);
+    //     cout << "R: " << R << endl;
+    //     cout << "digits: " << N << endl;
+    //     cout << "i: " << i << endl;
+    //     R.digits[0] = N.digits.at(i.toInt());
+    //     cout << "Here" << endl;
+    //     if (R > D || R == D)
+    //     {
+    //         Q.digits[i.toInt()] = 1;
+    //     }
+    //     cout << "Q: " << Q << " R: " << R << endl;
+    // }
+    // return Q;
+
+    BigInt finalResult;
+    finalResult.digits.pop_back();
+
+    int denomSize = D.digits.size();
+    int numerSize = N.digits.size();
+    
+    BigInt top;
+    top.digits.pop_back();
+    BigInt denom(D);
+    // cout << "denom: " << denom << endl;
+
+    // BigInt remain;
+
+    
+    int nextDigitOfNumer = numerSize - denomSize;
+
+    //get top digits of numerator that can be divided
+    for (int i = N.digits.size() - 1; i >= nextDigitOfNumer; i--)
+    {
+        top.digits.push_back(N.digits[i]);
+    }
+    nextDigitOfNumer = nextDigitOfNumer - 1;
+    reverse(top.digits.begin(), top.digits.end());
+    if (top < denom || top == denom)
+    {
+        top.digits.clear();
+        for (int i = N.digits.size() - 1; i >= nextDigitOfNumer; i--)
+        {
+            top.digits.push_back(N.digits[i]);
+        }
+        nextDigitOfNumer = nextDigitOfNumer - 1;
+        reverse(top.digits.begin(), top.digits.end());
+    }
+
+    do
+    {
+        
+
+        // cout << "nextDON: " << nextDigitOfNumer << endl;
+        // cout << "top: " << top << endl;
+
+        
+        BigInt result(divideBySubtraction(top, denom, remainder));
+        // cout << "result: " << result << endl;
+        // cout << "remainder: " << remainder << endl;
+
+        finalResult.digits.push_back(result.digits[0]);
+        // cout << "finalResult: " << finalResult << endl;
+
+        top = remainder;
+
+        // cout << "newTop: " << top << endl;
+
+        // nextDigitOfNumer = nextDigitOfNumer - 1;
+        if (nextDigitOfNumer >= - 1 && remainder < D)
+        {
+            vector<short>::iterator it = top.digits.begin();
+            top.digits.insert(it, N.digits[nextDigitOfNumer]);
+        }
+        nextDigitOfNumer = nextDigitOfNumer - 1;
+    } while(nextDigitOfNumer >= - 1 && remainder < D);
+
+    // reverse(remainder.digits.begin(), remainder.digits.end());
+    // removeLeadingZeros(top);
+    // remainder = top;
+    reverse(finalResult.digits.begin(), finalResult.digits.end());
+    return finalResult;
 }
 
 BigInt longDivision(const BigInt &num1, int num2, int &remainder) 
