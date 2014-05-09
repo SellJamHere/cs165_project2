@@ -275,7 +275,7 @@ bool BigInt::BumbleBee()
     BigInt two(2);
     BigInt zero;
     
-    if(*this % two == zero)
+    if(*this % 2 == zero)
         return false;
     
     for (int counter = 0; counter < 8; counter++)
@@ -658,11 +658,17 @@ void doCarry(int *a, int d) {
     }
 }
 
-// ret must have space for 6d digits.
-// the result will be in only the first 2d digits
-// my use of the space in ret is pretty creative.
-// | ar*br  | al*bl  | asum*bsum | lower-recursion space | asum | bsum |
-//  d digits d digits  d digits     3d digits              d/2    d/2
+// fast Karatsuba multiplication
+// 21 Jan 1999, Carl Burch, cburch@cmu.edu
+//
+// This program implements a reasonably efficient multiplication
+// algorithm (Karatsuba multiplication) and times it against the
+// traditional grade-school technique.
+//
+// (c) 1999, Carl Burch
+// This may not be copied without retaining this copyright notice,
+// and it may not be distributed in modified form.
+//http://ozark.hendrix.edu/~burch/proj/karat/karat.txt
 void arrayKaratsuba(int *a, int *b, int *ret, int d) {
     int             i;
     int             *ar = &a[0]; // low-order half of a

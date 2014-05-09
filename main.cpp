@@ -32,6 +32,8 @@ int main()
             cout << B << endl;
             cout << "is prime." << endl;
         }
+
+        cout << endl;
     }
 
     return 0;
