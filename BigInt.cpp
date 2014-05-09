@@ -225,7 +225,8 @@ BigInt bigPow(const BigInt &base, const BigInt &exponent)
     BigInt power(base);
 //    cout << "power: " << power << endl;
     BigInt i(1);
-    for (; exponent > i; i++)
+    //for (; exponent > i; i++)
+    for (BigInt j(1); j < exponent; j++)
     {
 //        cout << "base: " << base << endl;
         power = power * base;
@@ -262,6 +263,9 @@ int J(BigInt x, BigInt y)
     else if (!x.isOdd())
     {
         BigInt exponent = ((bigPow(y, two) - one) / eight);
+        cout << "exponent: " << exponent << endl;
+        
+        //return (J(x/two, y) * bigPow(-1, exponent));
         if (exponent.isOdd())
         {
             return J(x / two, y) * - 1;
@@ -274,6 +278,8 @@ int J(BigInt x, BigInt y)
     else
     {
         BigInt exponent = ((x - one) * (y - one) / four);
+        
+        //return (J(y % x, x) * bigPow(-1, exponent));
         if (exponent.isOdd())
         {
             return J(y % x, x) * - 1;
@@ -294,6 +300,8 @@ int Steven(BigInt b, BigInt N)
     BigInt y(b);
     int a = 1;
     
+    //return bigPow(b, ((N-one)/two));
+    
     while (x > zero)
     {
         if (x.isOdd()){
@@ -302,6 +310,7 @@ int Steven(BigInt b, BigInt N)
             a = temp.toInt();
         }
         // BigInt two(2);
+        //y = bigPow(y, two) % N;
         y = karatsuba(y, y) % N;
         x = x/two;
 //        cout << "x: " << x << endl;
@@ -313,18 +322,21 @@ bool BigInt::optimusPrime()
 {
     Random randomGenerator;
     BigInt one(1);
+    BigInt zero;
     int k = 10;
     // BigInt bigK(k);
     for (int i = 0; i < k; i++) {
-        BigInt b(randomGenerator.getRandom(0));
+        BigInt b(randomGenerator.getRandom(0)+1);
         cout << "b: " << b << endl;
         BigInt j(J(b,*this));
         BigInt steven(Steven(b,*this));
         steven = steven;
+        
+        
         BigInt Gcd;
         Gcd = gcd(b,*this);
         cout << "gcd: " << Gcd << " J: " << j << " Steven: " << steven << endl;
-        if (!(Gcd == one && j == steven))
+        if (!(Gcd == one && ((j - steven) == zero)))
         {
             return false;
         }
@@ -411,7 +423,7 @@ BigInt subtract(const BigInt &leftInt, const BigInt &rightInt)
     
     if (!(leftInt > rightInt) && !(leftInt == rightInt))
     {
-        cout << leftInt << " is not greater than or equal to " << rightInt << endl;
+        //cout << leftInt << " is not greater than or equal to " << rightInt << endl;
         return leftInt;
     }
     int carry = 0;
@@ -543,38 +555,41 @@ BigInt karatsuba(const BigInt &int1, const BigInt &int2)
     
     //Split int1
     BigInt top1 = splitTopHalf(const_cast<BigInt &>(int1), m);
-    removeLeadingZeros(top1);
+    //removeLeadingZeros(top1);
 //    cout << "top1: " << top1 << "    ";
     BigInt bottom1 = splitBottomHalf(const_cast<BigInt &>(int1), m);
-    removeLeadingZeros(bottom1);
+    //removeLeadingZeros(bottom1);
 //    cout << "bottom1: " << bottom1 << "    ";
 
     //Split int2
     BigInt top2 = splitTopHalf(const_cast<BigInt &>(int2), m);
-    removeLeadingZeros(top2);
+    //removeLeadingZeros(top2);
 //    cout << "top2: " << top2 << "    ";
     BigInt bottom2 = splitBottomHalf(const_cast<BigInt &>(int2), m);
-    removeLeadingZeros(bottom2);
+    //removeLeadingZeros(bottom2);
 //    cout << "bottom2: " << bottom2 << "    " << endl;
 
     BigInt z0 = karatsuba(bottom1, bottom2);
     removeLeadingZeros(z0);
 //    cout << "z0: " << z0 << endl;
-    BigInt z1 = karatsuba((bottom1 + top1), (bottom2 + top2));
+    BigInt z1 = karatsuba((bottom1 - top1), (bottom2 - top2));
     removeLeadingZeros(z1);
 //    cout << " z1: " << z1 << endl;
     BigInt z2 = karatsuba(top1, top2);
-    removeLeadingZeros(z2); 
+    removeLeadingZeros(z2);
 //    cout << " z2: " << z2 << endl;
     
     BigInt ten(10);
     BigInt two(2);
 //    BigInt bigM(m);
     BigInt part1(z2.shiftLeft(m * 2));
-    BigInt part2((z1 - z2 - z0).shiftLeft(m / 2));
-    part2 = part2.shiftLeft(m);
+    BigInt part2((z2 + z0 - z1).shiftLeft(m));
+    //BigInt part2((z1 - z2 - z0).shiftLeft(m));
+    //part2 = part2.shiftLeft(m);
     
     BigInt temp(part1 + part2 + z0);
+    
+    //cout << "Result of karatsuba: " << temp << endl;
     return temp;
 }
 
@@ -722,48 +737,16 @@ int r1 = r.getRandom(time(&timer));
 
 BigInt randomize(BigInt N)
 {
-    bool same = false;
     BigInt random(N);
     
-    do {
-        for (int i = N.digits.size()-1; i >= 0; i--)
-        {
-            r1 = r.getRandom(0);
-            cout << "Random number: " << r1 << endl;
-            if (r1 > N.digits[i])
-            break;
-            while (i == N.digits.size()-1 && r1 == N.digits[i])
-            {
-                random.digits[i] = r1;
-                r1 = r.getRandom(0);
-                if (r1 > N.digits[i-1])
-                {
-                    random = N;
-                    break;
-                }
-                else{
-                    random.digits[i-1] = r1;
-                    same = true;
-                    i = i-2;
-                }
-            }
-            if (same == true)
-            {
-                r1 = r.getRandom(0);
-                if (r1 > N.digits[i]){
-                    random = N;
-                    break;
-                }
-                if (r1 == N.digits[i])
-                same = true;
-                else
-                same = false;
-            }
-            
-            random.digits[i] = r1;
-        }
- 
-    } while (random > N || random == N);
+    for (int i = N.digits.size()-1; i >= 0; i--)
+    {
+        r1 = r.getRandom(0);
+        random.digits[i] = r1;
+    }
+    
+    random = (random % (N - 1)) + 1;
+    
     
     removeLeadingZeros(random);
     return random;
