@@ -133,7 +133,7 @@ BigInt BigInt::operator*(int rightInt) const
 BigInt BigInt::operator/(const BigInt &rightInt) const
 {
     BigInt remainder;
-    return divideFast(*this, rightInt, remainder);
+    return divideBySubtraction(*this, rightInt, remainder);
 }
 
 BigInt BigInt::operator/(int rightInt) const
@@ -146,7 +146,7 @@ BigInt BigInt::operator/(int rightInt) const
 BigInt BigInt::operator%(const BigInt &rightInt) const
 {
     BigInt remainder;
-    BigInt quotient = divideFast(*this, rightInt, remainder);
+    BigInt quotient = divideBySubtraction(*this, rightInt, remainder);
     return remainder;
 }
 
@@ -428,7 +428,7 @@ bool BigInt::BumbleBee()
     
     for (int counter = 0; counter < 10; counter++)
     {
-        cout << "i: " << counter << endl;
+        // cout << "i: " << counter << endl;
         if (!(Eric(randomize(*this), *this - one, *this) == one))
             return false;
     }
@@ -737,7 +737,10 @@ void doCarry(int *a, int d) {
         }
         a[i] -= c * 10;
     }
-    if(c != 0) fprintf(stderr, "Overflow %d\n", c);
+    if(c != 0)
+    {
+        fprintf(stderr, "Overflow %d\n", c);
+    }
 }
 
 // ret must have space for 6d digits.
