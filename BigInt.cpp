@@ -7,6 +7,8 @@
 #include "Timer.h"
 #include "Random.h"
 
+using namespace std;
+
 #define NUMBER_BASE 10
 
 const int ASCII_0 = 48;
@@ -794,48 +796,16 @@ int r1 = r.getRandom(time(&timer));
 
 BigInt randomize(BigInt N)
 {
-    bool same = false;
     BigInt random(N);
     
-    do {
-        for (int i = N.digits.size()-1; i >= 0; i--)
-        {
-            r1 = r.getRandom(0);
-            cout << "Random number: " << r1 << endl;
-            if (r1 > N.digits[i])
-            break;
-            while (i == N.digits.size()-1 && r1 == N.digits[i])
-            {
-                random.digits[i] = r1;
-                r1 = r.getRandom(0);
-                if (r1 > N.digits[i-1])
-                {
-                    random = N;
-                    break;
-                }
-                else{
-                    random.digits[i-1] = r1;
-                    same = true;
-                    i = i-2;
-                }
-            }
-            if (same == true)
-            {
-                r1 = r.getRandom(0);
-                if (r1 > N.digits[i]){
-                    random = N;
-                    break;
-                }
-                if (r1 == N.digits[i])
-                same = true;
-                else
-                same = false;
-            }
-            
-            random.digits[i] = r1;
-        }
- 
-    } while (random > N || random == N);
+    for (int i = N.digits.size()-1; i >= 0; i--)
+    {
+        r1 = r.getRandom(0);
+        random.digits[i] = r1;
+    }
+    
+    random = (random % (N - 1)) + 1;
+    
     
     removeLeadingZeros(random);
     return random;

@@ -75,9 +75,9 @@ int main()
 //     }
 //     cout << "Random number: " << rando << endl;
 
-    // BigInt bigPrime("331");
-    // bool prime = bigPrime.optimusPrime();
-    // cout << "Prime? " << prime;
+    BigInt bigPrime("331");
+    bool prime = bigPrime.optimusPrime();
+    cout << "Prime? " << prime;
 
     cout << globalTimer << endl;
     
